@@ -5,6 +5,13 @@ Eskimo is an entity-component system written in haxe, focused on having a small 
 * hxE - lacked functionality, as a system could only process 1 type of Entity by default.
 * hxE2 - had functionality, but was inconsistent, messy codebase due to a bad design choice, and because of this was hard to maintain or debug.
 
+##### Features
+* Create and destroy `Entity` objects through an instance of the `Context` class.
+* Assign any class object as a component to an `Entity`.
+* Filter entities based on which components the have using a `View`.
+* Use an `EventView` to get lists of added, updated, or removed entities. Clear the events after processing with `.clear()`.
+* Use a `BufferView` to maintain a cache of entity components. Update the buffer with `.buffer()`.
+
 ##### API Overview
 * `Context` - entry point to using eskimo.
   * `.create():Entity` - creates and returns a new `Entity`.
