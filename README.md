@@ -23,6 +23,7 @@ Eskimo is an entity-component system written in haxe, focused on having a small 
   * `.has(MyComponentClass):Bool` - check if this `Entity` has a component type.
 * `View([IncludeComponents..], ?[ExcludeComponents..], ?context)` - maintains a list of `Entity` objects corresponding to the `IncludeComponents` and `ExcludeComponents` criteria.
   * `.entities:Array<Entity>` - an array of entities currently meeting the criteria of this `View`.
+  * `.destroy():Void` - destroy this `View` when no longer used.
 * `EventView([IncludeComponents..], ?[ExcludeComponents..], ?context)` - extends `View` with entity changes.
   * `.added:Array<Entity>` - an array of added entities to this `View`.
   * `.updated:Array<Entity>` - an array of updated entities.
