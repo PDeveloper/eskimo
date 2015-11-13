@@ -3,7 +3,6 @@ import cpp.vm.Thread;
 import eskimo.EventView;
 import eskimo.ThreadContext;
 import eskimo.View;
-
 import Components;
 
 /**
@@ -14,28 +13,17 @@ import Components;
  * @author PDeveloper
  */
 
-class ThreadSample
+class Main 
 {
 	
-	private var thread:Thread;
-	
-	private var context:ThreadContext;
-	private var threadContext:ThreadContext;
-	
-	private var isRunning:Bool;
-	private var isThreadRunning:Bool;
-	
-	public function new():Void
+	static function main():Void
 	{
-		context = new ThreadContext();
-		threadContext = new ThreadContext();
+		var context = new ThreadContext();
+		var threadContext = new ThreadContext();
 		
 		context.add(threadContext);
-	}
-	
-	public function run():Void
-	{
-		thread = Thread.create(threadRun);
+		
+		var thread = Thread.create(run.bind(threadContext));
 		
 		for (i in 0...10)
 		{
@@ -47,7 +35,7 @@ class ThreadSample
 		
 		var view = new EventView([ComponentA], context);
 		
-		isRunning = true;
+		var isRunning = true;
 		while (isRunning)
 		{
 			context.update();
@@ -64,14 +52,14 @@ class ThreadSample
 		}
 	}
 	
-	private function threadRun():Void
+	private static function run(context:ThreadContext):Void
 	{
-		var view = new EventView([ComponentB], threadContext);
+		var view = new EventView([ComponentB], context);
 		
-		isThreadRunning = true;
+		var isThreadRunning = true;
 		while (isThreadRunning)
 		{
-			threadContext.update();
+			context.update();
 			
 			for (e in view.added)
 			{

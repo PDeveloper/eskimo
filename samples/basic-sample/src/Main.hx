@@ -4,7 +4,6 @@ import eskimo.Context;
 import eskimo.EventView;
 import eskimo.View;
 import haxe.Json;
-
 import Components;
 
 /**
@@ -14,14 +13,10 @@ import Components;
 
 using Lambda;
 
-class BasicSample
+class Main 
 {
-
-	public function new():Void
-	{
-	}
 	
-	public function run():Void
+	static function main():Void
 	{
 		var context = new Context();
 		
