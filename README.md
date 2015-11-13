@@ -33,6 +33,57 @@ Eskimo is an entity-component system written in haxe, focused on having a small 
   * `.previous(entity, MyComponentClass):MyComponentClass` - previous component of the passed `Entity` as buffered by this `BufferView`.
   * `.buffer():Void` - buffers the current components of all entities in this `View`.
 
+##### Usage
+```haxe
+package ;
+import eskimo.Context;
+import eskimo.View;
+
+class ComponentA {
+	public var string:String;
+	public function new(string:String):Void {
+		this.string = string;
+	}
+}
+class ComponentB {
+	public var int:Int;
+	public function new(int:Int):Void {
+		this.int = int;
+	}
+}
+
+class Main {
+
+	static function main():Void {
+		var context = new Context();
+		var entity0 = context.create();
+		var entity1 = context.create();
+		
+		var component0a = new ComponentA('Entity 0 with Component A');
+		var component0b = new ComponentB(7);
+		entity0.set(component0a);
+		entity0.set(component0b);
+		
+		var component1b = new ComponentB(13);
+		entity1.set(component1b);
+		
+		var viewab = new View([ComponentA, ComponentB], context);
+		var viewb = new View([ComponentB], context);
+		
+		for (entity in viewab.entities) {
+			trace('Entity id: ${entity.id}');
+			trace(entity.get(ComponentA).string);
+			trace(entity.get(ComponentB).int);
+		}
+		
+		for (entity in viewb.entities) {
+			trace('Entity id: ${entity.id}');
+			trace(entity.get(ComponentB).int);
+		}
+	}
+}
+```
+
 ##### Overview
 Eskimo is currently focused on single-threaded execution. hxE2 attempted to address this, but with overkill; every single View would be threadsafe, which is unnecessary (multiple systems running on 1 thread, multiple views in a single system, etc.)
 
