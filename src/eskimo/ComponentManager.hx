@@ -69,6 +69,13 @@ class ComponentManager
 		return container.get(e);
 	}
 	
+	public function remove<T>(e:Entity, componentClass:Class<T>):Void
+	{
+		var type = getType(componentClass);
+		var container:Container<T> = cast containers[type.id];
+		container.remove(e);
+	}
+	
 	public function has<T>(e:Entity, componentClass:Class<T>):Bool
 	{
 		return get(e, componentClass) != null;
@@ -76,7 +83,7 @@ class ComponentManager
 	
 	public function clear(e:Entity):Void
 	{
-		for (container in containers) container.clear(e);
+		for (container in containers) container.remove(e);
 	}
 	
 	public function getContainer<T>(componentClass:Class<T>):Container<T>

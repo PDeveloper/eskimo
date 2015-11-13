@@ -33,6 +33,11 @@ class Entity
 		return context.components.get(this, componentClass);
 	}
 	
+	public function remove<T>(componentClass:Class<T>):Void
+	{
+		context.components.remove(this, componentClass);
+	}
+	
 	public function has<T>(componentClass:Class<T>):Bool
 	{
 		return context.components.has(this, componentClass);

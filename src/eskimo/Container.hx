@@ -24,7 +24,7 @@ class ViewListener
 interface IContainer
 {
 	
-	public function clear(e:Entity):Void;
+	public function remove(e:Entity):Void;
 	
 }
 
@@ -80,7 +80,7 @@ class Container<T> implements IContainer
 		return array[e.id];
 	}
 	
-	public function clear(e:Entity):Void
+	public function remove(e:Entity):Void
 	{
 		_set(e, null);
 	}
