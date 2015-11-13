@@ -66,6 +66,7 @@ class Container<T> implements IContainer
 		else e.flag.sub(type.flag);
 		
 		array[e.id] = component;
+		manager.context.onComponentSet(e, type);
 		
 		for (view in views) view.view.update(e, view.index);
 	}

@@ -69,6 +69,12 @@ class ComponentManager
 		return container.get(e);
 	}
 	
+	public function getByType<T>(e:Entity, type:ComponentType<T>):T
+	{
+		var container:Container<T> = cast containers[type.id];
+		return container.get(e);
+	}
+	
 	public function remove<T>(e:Entity, componentClass:Class<T>):Void
 	{
 		var type = getType(componentClass);

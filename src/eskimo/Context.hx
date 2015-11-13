@@ -18,6 +18,11 @@ class Context
 		entities = new EntityManager(this);
 	}
 	
+	public function onComponentSet<T>(e:Entity, type:ComponentType<T>):Void
+	{
+		
+	}
+	
 	public function create():Entity
 	{
 		return entities.create();
