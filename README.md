@@ -91,7 +91,7 @@ While Eskimo's core is focused on being single-threaded, using the ThreadContext
 
 You cannot modify a component directly, instead, create a new one, assign the new values to it, and set it to the `Entity`. This ensures component consistency across threads.
 
-For a basic example of threading using Eskimo, see ThreadSample.hx in the eskimo-hxcpp-test sample folder.
+For a basic example of threading using Eskimo, see thread-sample in the samples folder.
 
 ##### Overview
 Eskimo is currently focused on single-threaded execution. hxE2 attempted to address this, but with overkill; every single View would be threadsafe, which is unnecessary (multiple systems running on 1 thread, multiple views in a single system, etc.)
