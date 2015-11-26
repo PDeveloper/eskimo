@@ -1,6 +1,7 @@
 package;
 import eskimo.BufferView;
 import eskimo.Context;
+import eskimo.Entity;
 import eskimo.EventView;
 import eskimo.View;
 import haxe.Json;
@@ -53,6 +54,11 @@ class Main
 		
 		var viewab = new View([ComponentA, ComponentB], context);
 		var viewb = new View([ComponentB], context);
+		
+		viewab.onAdd = function (entity:Entity):Void
+		{
+			trace('${entity.id} was added to viewab');
+		}
 		
 		if (viewab.entities.length == 1 &&
 			viewb.entities.length == 2)

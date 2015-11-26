@@ -22,6 +22,10 @@ class View
 	
 	public var entities:Array<Entity>;
 	
+	public var onAdd:Entity->Void;
+	public var onUpdate:Entity->Void;
+	public var onRemove:Entity->Void;
+	
 	public function new(includes:Array<Class<Dynamic>>, ?excludes:Array<Class<Dynamic>> = null, ?context:Context = null):Void
 	{
 		this.includes = includes;
@@ -62,9 +66,18 @@ class View
 	{
 		if (e.flag.contains(includeFlag) && excludeFlag.contains(e.flag))
 		{
-			if (!entities.has(e)) entities.push(e);
+			if (!entities.has(e))
+			{
+				entities.push(e);
+				if (onAdd != null) onAdd(e);
+			}
+			else if (onUpdate != null) onUpdate(e);
 		}
-		else if (entities.has(e)) entities.remove(e);
+		else if (entities.has(e))
+		{
+			entities.remove(e);
+			if (onRemove != null) onRemove(e);
+		}
 	}
 	
 	public function destroy():Void
