@@ -40,11 +40,15 @@ class EventView extends View
 			if (entities.has(e))
 			{
 				if (!added.has(e) && !updated.has(e)) updated.push(e);
+				
+				if (onUpdate != null) onUpdate(e);
 			}
 			else
 			{
 				added.push(e);
 				entities.push(e);
+				
+				if (onAdd != null) onAdd(e);
 			}
 		}
 		else if (entities.has(e))
@@ -54,6 +58,8 @@ class EventView extends View
 			
 			if (!removed.has(e)) removed.push(e);
 			entities.remove(e);
+			
+			if (onRemove != null) onRemove(e);
 		}
 	}
 	
