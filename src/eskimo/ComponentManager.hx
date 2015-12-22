@@ -45,6 +45,8 @@ class ComponentManager
 	
 	private var containers:Array<IContainer>;
 	
+	public var onSetComponent:Entity->Dynamic->Void;
+	
 	public function new(context:Context):Void
 	{
 		this.context = context;
@@ -60,6 +62,8 @@ class ComponentManager
 		var type = getType(Type.getClass(component));
 		var container:Container<T> = cast containers[type.id];
 		container.set(e, component);
+		
+		if (onSetComponent != null) onSetComponent(e, component);
 	}
 	
 	public function get<T>(e:Entity, componentClass:Class<T>):T
@@ -80,6 +84,8 @@ class ComponentManager
 		var type = getType(componentClass);
 		var container:Container<T> = cast containers[type.id];
 		container.remove(e);
+		
+		if (onSetComponent != null) onSetComponent(e, null);
 	}
 	
 	public function has<T>(e:Entity, componentClass:Class<T>):Bool
@@ -96,6 +102,22 @@ class ComponentManager
 	{
 		var type = getType(componentClass);
 		return cast containers[type.id];
+	}
+	
+	public function getContainerByType<T>(type:IComponentType):Container<T>
+	{
+		return cast containers[type.id];
+	}
+	
+	public function getEntityComponents(e:Entity):Array<Dynamic>
+	{
+		var components = new Array<Dynamic>();
+		for (container in containers)
+		{
+			if (container.has(e)) components.push(container.getUnsafe(e));
+		}
+		
+		return components;
 	}
 	
 	public function getType<T>(componentClass:Class<T>):IComponentType

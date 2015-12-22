@@ -24,6 +24,8 @@ class ViewListener
 interface IContainer
 {
 	
+	public function getUnsafe(e:Entity):Dynamic;
+	public function has(e:Entity):Bool;
 	public function remove(e:Entity):Void;
 	
 }
@@ -79,6 +81,16 @@ class Container<T> implements IContainer
 	public function get(e:Entity):T
 	{
 		return array[e.id];
+	}
+	
+	public function getUnsafe(e:Entity):Dynamic
+	{
+		return array[e.id];
+	}
+	
+	public function has(e:Entity):Bool
+	{
+		return array[e.id] != null;
 	}
 	
 	public function remove(e:Entity):Void

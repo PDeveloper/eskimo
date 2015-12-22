@@ -6,6 +6,6 @@
 	"description": "A modular and simple entity system.",
 	"version": "0.0.1",
 	"releasenote": "Alpha release. Fully functional and feature-complete enough to be useful.",
-	"contributors": ["PSvils"],
+	"contributors": ["PDeveloper"],
 	"classPath" : "src"
 }
