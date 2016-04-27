@@ -26,8 +26,23 @@ class EventView extends View
 	
 	public function clear():Void 
 	{
+		clearAdded();
+		clearUpdated();
+		clearRemoved();
+	}
+	
+	public function clearAdded():Void
+	{
 		while (added.length > 0) added.pop();
+	}
+	
+	public function clearUpdated():Void
+	{
 		while (updated.length > 0) updated.pop();
+	}
+	
+	public function clearRemoved():Void
+	{
 		while (removed.length > 0) removed.pop();
 	}
 	
