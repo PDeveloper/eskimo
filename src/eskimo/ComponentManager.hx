@@ -38,54 +38,45 @@ class ComponentType<T> implements IComponentType
 class ComponentManager
 {
 	
-	private var typeId:Int;
 	private var types:Map<String, IComponentType>;
-	
-	public var context:Context;
-	
 	private var containers:Array<IContainer>;
 	
-	public var onSetComponent:Entity->Dynamic->Void;
+	public var onComponentSet:Entity->Dynamic->Void;
 	
-	public function new(context:Context):Void
+	public function new():Void
 	{
-		this.context = context;
-		
-		typeId = 0;
 		types = new Map<String, IComponentType>();
-		
 		containers = new Array<IContainer>();
+	}
+	
+	@:allow(eskimo.Container)
+	private function _onComponentSet<T>(e:Entity, type:ComponentType<T>, component:T):Void
+	{
+		if (onComponentSet != null) onComponentSet(e, component);
 	}
 	
 	public function set<T>(e:Entity, component:T):Void
 	{
-		var type = getType(Type.getClass(component));
-		var container:Container<T> = cast containers[type.id];
+		var container:Container<T> = getContainer(Type.getClass(component));
 		container.set(e, component);
-		
-		if (onSetComponent != null) onSetComponent(e, component);
 	}
 	
 	public function get<T>(e:Entity, componentClass:Class<T>):T
 	{
-		var type = getType(componentClass);
-		var container:Container<T> = cast containers[type.id];
+		var container:Container<T> = getContainer(componentClass);
 		return container.get(e);
 	}
 	
 	public function getByType<T>(e:Entity, type:ComponentType<T>):T
 	{
-		var container:Container<T> = cast containers[type.id];
+		var container:Container<T> = getContainerByType(type);
 		return container.get(e);
 	}
 	
 	public function remove<T>(e:Entity, componentClass:Class<T>):Void
 	{
-		var type = getType(componentClass);
-		var container:Container<T> = cast containers[type.id];
+		var container:Container<T> = getContainer(componentClass);
 		container.remove(e);
-		
-		if (onSetComponent != null) onSetComponent(e, null);
 	}
 	
 	public function has<T>(e:Entity, componentClass:Class<T>):Bool
@@ -98,13 +89,13 @@ class ComponentManager
 		for (container in containers) container.remove(e);
 	}
 	
-	public function getContainer<T>(componentClass:Class<T>):Container<T>
+	public inline function getContainer<T>(componentClass:Class<T>):Container<T>
 	{
 		var type = getType(componentClass);
-		return cast containers[type.id];
+		return getContainerByType(type);
 	}
 	
-	public function getContainerByType<T>(type:IComponentType):Container<T>
+	public inline function getContainerByType<T>(type:IComponentType):Container<T>
 	{
 		return cast containers[type.id];
 	}
@@ -127,10 +118,9 @@ class ComponentManager
 		if (types.exists(className)) return types.get(className);
 		else
 		{
-			var type = new ComponentType<T>(typeId, componentClass);
-			containers[typeId] = new Container<T>(type, this);
-			
-			typeId++;
+			var type_id = containers.length;
+			var type = new ComponentType<T>(type_id, componentClass);
+			containers[type_id] = new Container<T>(type, this);
 			
 			types.set(className, type);
 			return type;
