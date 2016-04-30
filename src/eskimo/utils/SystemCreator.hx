@@ -8,7 +8,7 @@ import eskimo.EventView;
  * @author PDeveloper
  */
 
-class SystemHelper
+class SystemCreator
 {
 	
 	private var _views:Map<String, EventView>;

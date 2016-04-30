@@ -17,14 +17,4 @@ class Context
 		entities = new EntityManager(this);
 	}
 	
-	public function create():Entity
-	{
-		return entities.create();
-	}
-	
-	public function destroy(e:Entity):Void
-	{
-		entities.destroy(e);
-	}
-	
 }
