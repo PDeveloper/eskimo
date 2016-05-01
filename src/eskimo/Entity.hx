@@ -1,5 +1,4 @@
 package eskimo;
-import cpp.Void;
 import eskimo.bits.BitFlag;
 import eskimo.Context;
 import haxe.Serializer;
