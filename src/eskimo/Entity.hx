@@ -1,6 +1,9 @@
 package eskimo;
+import cpp.Void;
 import eskimo.bits.BitFlag;
 import eskimo.Context;
+import haxe.Serializer;
+import haxe.Unserializer;
 
 /**
  * ...
@@ -51,6 +54,18 @@ class Entity
 	public function destroy():Void
 	{
 		context.entities.destroy(this);
+	}
+	
+	@:keep
+	private function hxSerialize(serializer:Serializer):Void
+	{
+		serializer.serialize(id);
+	}
+	
+	@:keep
+	private function hxUnserialize(unserializer:Unserializer):Void
+	{
+		id = unserializer.unserialize();
 	}
 	
 }
