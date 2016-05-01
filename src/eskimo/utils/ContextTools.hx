@@ -9,9 +9,10 @@ import eskimo.Entity;
 class ContextTools
 {
 	
-	public static function create(context:Context):Entity
+	public static function create(context:Context, components:Array<Dynamic> = null):Entity
 	{
-		return context.entities.create();
+		components = (components == null) ? [] : components;
+		return context.entities.create(components);
 	}
 	
 	public static function destroy(context:Context, e:Entity):Void

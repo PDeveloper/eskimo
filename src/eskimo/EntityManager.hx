@@ -25,10 +25,13 @@ class EntityManager
 		entities = new Array<Entity>();
 	}
 	
-	public function create():Entity
+	public function create(components:Array<Dynamic> = null):Entity
 	{
 		var e = new Entity(context, entityId++);
 		entities.push(e);
+		
+		components = (components == null) ? [] : components;
+		for (component in components) e.set(component);
 		
 		if (onCreate != null) onCreate(e);
 		
