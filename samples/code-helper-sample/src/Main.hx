@@ -4,7 +4,7 @@ import eskimo.Context;
 import eskimo.Entity;
 import eskimo.EventView;
 import eskimo.View;
-import eskimo.utils.SystemHelper;
+import eskimo.utils.SystemCreator;
 import haxe.Json;
 import Components;
 
@@ -16,6 +16,8 @@ import Components;
 using Lambda;
 using EntityHelper;
 
+using eskimo.utils.ContextTools;
+
 class Main 
 {
 	
@@ -23,7 +25,7 @@ class Main
 	{
 		var context = new Context();
 		
-		var creator = new SystemHelper(context);
+		var creator = new SystemCreator(context);
 		
 		var e0 = context.create();
 		var e1 = context.create();

@@ -8,6 +8,8 @@ import eskimo.Entity;
  * @author PDeveloper
  */
 
+using eskimo.utils.ContextTools;
+
 class ThreadContext extends Context
 {
 	
@@ -26,6 +28,8 @@ class ThreadContext extends Context
 	public function new():Void
 	{
 		super();
+		
+		components.onComponentSet = onComponentSet;
 		
 		contexts = new Array<ThreadContext>();
 		
@@ -62,7 +66,7 @@ class ThreadContext extends Context
 		update_mutex.release();
 	}
 	
-	override public function onComponentSet<T>(e:Entity, type:ComponentType<T>):Void 
+	public function onComponentSet<T>(e:Entity, type:ComponentType<T>):Void 
 	{
 		if (isUpdating) return;
 		
