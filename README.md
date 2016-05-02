@@ -39,6 +39,8 @@ package ;
 import eskimo.Context;
 import eskimo.View;
 
+using eskimo.utils.ContextTools;
+
 class ComponentA {
 	public var string:String;
 	public function new(string:String):Void {
