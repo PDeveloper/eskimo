@@ -1,10 +1,6 @@
 ## eskimo
 Eskimo is an entity-component system written in haxe, focused on having a small codebase, and functionality over performance.
 
-##### Previous Efforts:
-* hxE - lacked functionality, as a system could only process 1 type of Entity by default.
-* hxE2 - had functionality, but was inconsistent, messy codebase due to a bad design choice, and because of this was hard to maintain or debug.
-
 ##### Features
 * Create and destroy `Entity` objects through an instance of the `Context` class.
 * Assign any class object as a component to an `Entity`.
@@ -14,8 +10,9 @@ Eskimo is an entity-component system written in haxe, focused on having a small 
 
 ##### API Overview
 * `Context` - entry point to using eskimo.
-  * `.create():Entity` - creates and returns a new `Entity`.
-  * `.destroy(entity):Void` - destroys the passed `Entity`.
+  * `entities.create():Entity` - creates and returns a new `Entity`.
+  * `entities.destroy(entity):Void` - destroys the passed `Entity`.
+  * `using eskimo.utils.ContextTools` - for faster access for basic functions on a Context object.
 * `Entity`
   * `.set(myComponent):Void` - set an object of any class to this `Entity`.
   * `.get(MyComponentClass):MyComponentClass` - get a component of this `Entity` by class.
@@ -32,6 +29,9 @@ Eskimo is an entity-component system written in haxe, focused on having a small 
 * `BufferView([IncludeComponents..], ?[ExcludeComponents..], ?context)` - extends `View` with a component buffer.
   * `.previous(entity, MyComponentClass):MyComponentClass` - previous component of the passed `Entity` as buffered by this `BufferView`.
   * `.buffer():Void` - buffers the current components of all entities in this `View`.
+* `SystemCreator(context)` - fast way to define some functionality with callbacks.
+  * `entities(onEntity:Entity->Void, [IncludeComponents..], ?[ExcludeComponents..]):Void` - calls the callback for all valid entities.
+  * `added/updated/removed(onEntity:Entity->Void, [IncludeComponents..], ?[ExcludeComponents..], clear = true):Void` - calls the callback for all valid entities, also clears the event queue if `clear` is set to true.
 
 ##### Usage
 ```haxe
@@ -105,6 +105,10 @@ Components no longer have a base class, and can be any object at all. Systems al
 Views have a better defined role in eskimo than in hxE2 - at the core they *only* manage a list of entities that correspond to its filters. Previous iterations would have Views managing local component storage which only bloated things. I will add several types of views, starting with a basic "state" view, that only manages a list of entities, an "event" view, that will also manage a list of added/updated/removed entities, and a "buffer" view, that will store the previous component state of entities.
 
 Phew. Any questions, make an issue. I'll work on a few samples and a short code demo right here in the description, meanwhile there's already a sample demonstrating the basic functionality. I'll be using this for my own projects and will update as I find things/add things.
+
+##### Previous Efforts:
+* hxE - lacked functionality, as a system could only process 1 type of Entity by default.
+* hxE2 - had functionality, but was inconsistent, messy codebase due to a bad design choice, and because of this was hard to maintain or debug.
 
 ##### License
 MIT as in free. Use it as you wish. Hopefully ethically and morally.
