@@ -1,6 +1,10 @@
 ## eskimo
 Eskimo is an entity-component system written in haxe, focused on having a small codebase, and functionality over performance.
 
+##### Install
+* git `haxelib git eskimo https://github.com/PDeveloper/eskimo.git`
+* haxelib `haxelib install eskimo`
+
 ##### Features
 * Create and destroy `Entity` objects through an instance of the `Context` class.
 * Assign any class object as a component to an `Entity`.
