@@ -4,6 +4,8 @@ import eskimo.Context;
 import eskimo.Entity;
 import eskimo.EventView;
 import eskimo.View;
+import eskimo.filters.Filter;
+import eskimo.filters.NoFilter;
 import eskimo.utils.SystemCreator;
 import haxe.Json;
 import Components;
@@ -38,7 +40,7 @@ class Main
 		creator.added(function (e) {
 			var ca = e.get(ComponentA);
 			trace(ca.string);
-		}, [ComponentA]);
+		}, new Filter([ComponentA]));
 		
 		creator.added(function (e) {
 			var ca = e.get(ComponentA);
@@ -47,11 +49,11 @@ class Main
 			var string = '';
 			for (i in 0...cb.int) string += ca.string;
 			trace(string);
-		}, [ComponentA, ComponentB]);
+		}, new Filter([ComponentA, ComponentB]));
 		
 		creator.entities(function (e) {
 			trace(e.flag);
-		}, []);
+		}, new NoFilter());
 	}
 	
 }

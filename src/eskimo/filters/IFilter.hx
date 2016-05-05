@@ -17,4 +17,9 @@ interface IFilter
 	public function update(context:Context):Void;
 	public function contains(entity:Entity):Bool;
 	
+	public function getIncludes():Array<Class<Dynamic>>;
+	public function getExcludes():Array<Class<Dynamic>>;
+	
+	public function toString():String;
+	
 }

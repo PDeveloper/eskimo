@@ -8,14 +8,16 @@ import eskimo.bits.BitFlag;
  * @author PDeveloper
  */
 
+using Lambda;
+
 class Filter implements IFilter
 {
 	
-	public var include_flag:BitFlag;
-	public var includes:Array<Class<Dynamic>>;
+	private var include_flag:BitFlag;
+	private var includes:Array<Class<Dynamic>>;
 	
-	public var exclude_flag:BitFlag;
-	public var excludes:Array<Class<Dynamic>>;
+	private var exclude_flag:BitFlag;
+	private var excludes:Array<Class<Dynamic>>;
 	
 	public function new(includes:Array<Class<Dynamic>>, excludes:Array<Class<Dynamic>> = null, context:Context = null):Void
 	{
@@ -60,6 +62,26 @@ class Filter implements IFilter
 	public inline function contains(entity:Entity):Bool
 	{
 		return entity.flag.contains(include_flag) && exclude_flag.contains(entity.flag);
+	}
+	
+	public function toString():String
+	{
+		function stringifyClass(_class:Class<Dynamic>):String
+		{
+			return Type.getClassName(_class);
+		}
+		
+		return 'INC:[' + includes.map(stringifyClass).join(',') + '], EXC:[' + excludes.map(stringifyClass).join('::') + ']';
+	}
+	
+	public function getIncludes():Array<Class<Dynamic>> 
+	{
+		return includes;
+	}
+	
+	public function getExcludes():Array<Class<Dynamic>> 
+	{
+		return excludes;
 	}
 	
 }

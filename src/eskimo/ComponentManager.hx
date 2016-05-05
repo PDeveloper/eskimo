@@ -11,6 +11,8 @@ interface IComponentType
 {
 	public var id:Int;
 	public var flag:BitFlag;
+	
+	public function getClass():Class<Dynamic>;
 }
 
 class ComponentType<T> implements IComponentType
@@ -31,6 +33,11 @@ class ComponentType<T> implements IComponentType
 		flag.set(id + 1, 1);
 		
 		className = Type.getClassName(componentClass);
+	}
+	
+	public function getClass():Class<Dynamic>
+	{
+		return componentClass;
 	}
 	
 }
@@ -109,6 +116,13 @@ class ComponentManager
 		}
 		
 		return components;
+	}
+	
+	public function getComponentClasses():Array<Class<Dynamic>>
+	{
+		var classes = [];
+		for (type in types) classes.push(type.getClass());
+		return classes;
 	}
 	
 	public function getType<T>(componentClass:Class<T>):IComponentType
