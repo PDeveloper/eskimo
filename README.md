@@ -34,8 +34,11 @@ Eskimo is an entity-component system written in haxe, focused on having a small 
   * `.previous(entity, MyComponentClass):MyComponentClass` - previous component of the passed `Entity` as buffered by this `BufferView`.
   * `.buffer():Void` - buffers the current components of all entities in this `View`.
 * `SystemCreator(context)` - fast way to define some functionality with callbacks.
-  * `entities(onEntity:Entity->Void, [IncludeComponents..], ?[ExcludeComponents..]):Void` - calls the callback for all valid entities.
-  * `added/updated/removed(onEntity:Entity->Void, [IncludeComponents..], ?[ExcludeComponents..], clear = true):Void` - calls the callback for all valid entities, also clears the event queue if `clear` is set to true.
+  * `entities(onEntity:Entity->Void, filter:IFilter):Void` - calls the callback for all valid entities.
+  * `added/updated/removed(onEntity:Entity->Void, filter:IFilter, clear = true):Void` - calls the callback for all valid entities, also clears the event queue if `clear` is set to true.
+* `IFilter` - filter objects to filter entities
+  * `Filter([IncludeComponents..], ?[ExcludeComponents], ?context)` - basic filtering based on entity components.
+  * `CallbackFilter(callback:Entity->Bool, [IncludeComponents..], ?[ExcludeComponents], ?context)` - like `Filter`, with an additional callback that gets called after passing component requirements.
 
 ##### Usage
 ```haxe
