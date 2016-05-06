@@ -76,8 +76,8 @@ class Main {
 		var component1b = new ComponentB(13);
 		entity1.set(component1b);
 		
-		var viewab = new View([ComponentA, ComponentB], context);
-		var viewb = new View([ComponentB], context);
+		var viewab = new View([ComponentA, ComponentB], null, context);
+		var viewb = new View([ComponentB], null, context);
 		
 		for (entity in viewab.entities) {
 			trace('Entity id: ${entity.id}');
