@@ -1,6 +1,7 @@
 package eskimo.utils;
 import eskimo.Context;
 import eskimo.Entity;
+import eskimo.View;
 
 /**
  * ...
@@ -23,6 +24,11 @@ class ContextTools
 	public inline static function clear(context:Context):Void
 	{
 		context.entities.clear();
+	}
+	
+	public inline static function view(context:Context, includes:Array<Class<Dynamic>>, ?excludes:Array<Class<Dynamic>> = null):View
+	{
+		return new View(includes, excludes, context);
 	}
 	
 }

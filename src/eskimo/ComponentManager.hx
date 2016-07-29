@@ -15,6 +15,7 @@ interface IComponentType
 	public function getClass():Class<Dynamic>;
 }
 
+@:generic
 class ComponentType<T> implements IComponentType
 {
 	
