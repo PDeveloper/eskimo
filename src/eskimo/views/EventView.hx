@@ -1,5 +1,7 @@
-package eskimo;
+package eskimo.views;
 import eskimo.Entity;
+import eskimo.containers.EntityArray;
+import eskimo.views.View;
 
 /**
  * ...
@@ -11,15 +13,15 @@ using Lambda;
 class EventView extends View
 {
 	
-	public var added:Array<Entity>;
-	public var updated:Array<Entity>;
-	public var removed:Array<Entity>;
+	public var added:EntityArray;
+	public var updated:EntityArray;
+	public var removed:EntityArray;
 	
 	public function new(includes:Array<Class<Dynamic>>, ?excludes:Array<Class<Dynamic>> = null, ?context:Context = null):Void
 	{
-		added = new Array<Entity>();
-		updated = new Array<Entity>();
-		removed = new Array<Entity>();
+		added = new EntityArray();
+		updated = new EntityArray();
+		removed = new EntityArray();
 		
 		super(includes, excludes, context);
 	}

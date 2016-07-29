@@ -1,7 +1,9 @@
-package eskimo;
+package eskimo.views;
 import eskimo.ComponentManager;
 import eskimo.bits.BitFlag;
 import eskimo.ComponentManager.ComponentType;
+import eskimo.containers.EntityArray;
+import eskimo.utils.Benchmarker;
 
 /**
  * ...
@@ -20,7 +22,7 @@ class View
 	private var excludeFlag:BitFlag;
 	private var excludes:Array<Class<Dynamic>>;
 	
-	public var entities:Array<Entity>;
+	public var entities:EntityArray;
 	
 	public var onAdd:Entity->Void;
 	public var onUpdate:Entity->Void;
@@ -31,7 +33,7 @@ class View
 		this.includes = includes;
 		this.excludes = (excludes != null) ? excludes : new Array<Class<Dynamic>>();
 		
-		entities = new Array<Entity>();
+		entities = new EntityArray();
 		
 		if (context != null) initialize(context);
 	}

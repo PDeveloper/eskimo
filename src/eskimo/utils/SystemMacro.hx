@@ -1,4 +1,5 @@
-package eskimo;
+package eskimo.utils;
+import eskimo.views.View;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
@@ -78,7 +79,7 @@ class SystemMacro
 			doc: null,
 			meta: [],
 			access: [APrivate],
-			kind: FVar(macro : Array<eskimo.View>, macro []),
+			kind: FVar(macro : Array<eskimo.views.View>, macro []),
 			pos: Context.currentPos()
 		};
 		fields.push(view_array);

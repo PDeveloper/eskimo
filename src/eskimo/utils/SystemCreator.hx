@@ -1,7 +1,7 @@
 package eskimo.utils;
 import eskimo.Context;
 import eskimo.Entity;
-import eskimo.EventView;
+import eskimo.views.EventView;
 import eskimo.filters.IFilter;
 
 /**

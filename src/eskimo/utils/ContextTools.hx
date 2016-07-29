@@ -1,12 +1,15 @@
 package eskimo.utils;
 import eskimo.Context;
 import eskimo.Entity;
-import eskimo.View;
+import eskimo.views.BufferView;
+import eskimo.views.EventView;
+import eskimo.views.View;
 
 /**
  * ...
  * @author PDeveloper
  */
+
 class ContextTools
 {
 	
@@ -29,6 +32,16 @@ class ContextTools
 	public inline static function view(context:Context, includes:Array<Class<Dynamic>>, ?excludes:Array<Class<Dynamic>> = null):View
 	{
 		return new View(includes, excludes, context);
+	}
+	
+	public inline static function eventview(context:Context, includes:Array<Class<Dynamic>>, ?excludes:Array<Class<Dynamic>> = null):View
+	{
+		return new EventView(includes, excludes, context);
+	}
+	
+	public inline static function bufferview(context:Context, includes:Array<Class<Dynamic>>, ?excludes:Array<Class<Dynamic>> = null):View
+	{
+		return new BufferView(includes, excludes, context);
 	}
 	
 }

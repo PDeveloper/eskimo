@@ -1,6 +1,7 @@
-package eskimo;
+package eskimo.containers;
 import eskimo.ComponentManager;
 import eskimo.ComponentManager.ComponentType;
+import eskimo.views.View;
 
 /**
  * ...

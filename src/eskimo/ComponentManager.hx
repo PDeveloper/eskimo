@@ -1,6 +1,7 @@
 package eskimo;
+import eskimo.containers.Container;
 import eskimo.bits.BitFlag;
-import eskimo.Container.IContainer;
+import eskimo.containers.Container.IContainer;
 
 /**
  * ...
@@ -57,7 +58,7 @@ class ComponentManager
 		containers = new Array<IContainer>();
 	}
 	
-	@:allow(eskimo.Container)
+	@:allow(eskimo.containers.Container)
 	private function _onComponentSet<T>(e:Entity, type:ComponentType<T>, component:T):Void
 	{
 		if (onComponentSet != null) onComponentSet(e, component);
