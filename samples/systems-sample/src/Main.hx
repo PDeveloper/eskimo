@@ -1,6 +1,5 @@
 package;
 import eskimo.ComponentManager;
-import eskimo.Context;
 import eskimo.Entity;
 import eskimo.EntityManager;
 import eskimo.systems.SystemManager;

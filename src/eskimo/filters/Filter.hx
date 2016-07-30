@@ -1,6 +1,6 @@
 package eskimo.filters;
-import eskimo.Context;
 import eskimo.Entity;
+import eskimo.EntityManager;
 import eskimo.bits.BitFlag;
 
 /**
@@ -19,14 +19,14 @@ class Filter implements IFilter
 	private var exclude_flag:BitFlag;
 	private var excludes:Array<Class<Dynamic>>;
 	
-	public function new(includes:Array<Class<Dynamic>>, excludes:Array<Class<Dynamic>> = null, context:Context = null):Void
+	public function new(includes:Array<Class<Dynamic>>, excludes:Array<Class<Dynamic>> = null, entities:EntityManager = null):Void
 	{
 		this.includes = includes;
 		this.excludes = excludes == null ? [] : excludes;
 		
 		include_flag = new BitFlag();
 		exclude_flag = new BitFlag();
-		if (context != null) update(context);
+		if (entities != null) update(entities);
 	}
 	
 	public function include(componentClass:Class<Dynamic>):Void 
@@ -49,13 +49,13 @@ class Filter implements IFilter
 		excludes.remove(componentClass);
 	}
 	
-	public function update(context:Context):Void
+	public function update(entities:EntityManager):Void
 	{
 		include_flag.clear();
-		for (componentClass in includes) include_flag.setTrue(context.components.getType(componentClass).id + 1);
+		for (componentClass in includes) include_flag.setTrue(entities.components.getType(componentClass).id + 1);
 		
 		exclude_flag.clear();
-		for (componentClass in excludes) exclude_flag.setTrue(context.components.getType(componentClass).id + 1);
+		for (componentClass in excludes) exclude_flag.setTrue(entities.components.getType(componentClass).id + 1);
 		exclude_flag.flip();
 	}
 	

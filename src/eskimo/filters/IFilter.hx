@@ -1,8 +1,9 @@
 package eskimo.filters;
-import eskimo.Context;
 import eskimo.Entity;
+import eskimo.EntityManager;
 
 /**
+ * ...
  * @author PDeveloper
  */
 
@@ -14,7 +15,7 @@ interface IFilter
 	public function exclude(componentClass:Class<Dynamic>):Void;
 	public function dontExclude(componentClass:Class<Dynamic>):Void;
 	
-	public function update(context:Context):Void;
+	public function update(entities:EntityManager):Void;
 	public function contains(entity:Entity):Bool;
 	
 	public function getIncludes():Array<Class<Dynamic>>;

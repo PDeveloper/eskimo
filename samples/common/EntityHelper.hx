@@ -1,6 +1,6 @@
 package;
-import eskimo.Context;
 import eskimo.Entity;
+
 import Components;
 
 /**

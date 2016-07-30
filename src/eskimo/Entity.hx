@@ -1,6 +1,5 @@
 package eskimo;
 import eskimo.bits.BitFlag;
-import eskimo.Context;
 import haxe.Serializer;
 import haxe.Unserializer;
 
