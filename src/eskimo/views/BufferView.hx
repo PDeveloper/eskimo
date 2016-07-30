@@ -48,7 +48,7 @@ class BufferView extends View
 	private var currentBuffers:Array<IBufferContainer>;
 	private var previousBuffers:Array<IBufferContainer>;
 	
-	public function new(includes:Array<Class<Dynamic>>, ?excludes:Array<Class<Dynamic>> = null, ?context:Context = null):Void
+	public function new(includes:Array<Class<Dynamic>>, ?excludes:Array<Class<Dynamic>> = null, ?_entities:EntityManager = null):Void
 	{
 		map = new Map<String, Int>();
 		
@@ -60,7 +60,7 @@ class BufferView extends View
 			var include = includes[index];
 			map.set(Type.getClassName(include), index);
 			
-			var container = context.components.getContainer(include);
+			var container = _entities.components.getContainer(include);
 			
 			var currentBuffer = new BufferContainer(container);
 			var previousBuffer = new BufferContainer(container);
@@ -69,7 +69,7 @@ class BufferView extends View
 			previousBuffers.push(previousBuffer);
 		}
 		
-		super(includes, excludes, context);
+		super(includes, excludes, _entities);
 		
 		for (e in entities) for (b in previousBuffers) b.buffer(e);
 	}

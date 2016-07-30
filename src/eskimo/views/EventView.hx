@@ -17,13 +17,13 @@ class EventView extends View
 	public var updated:EntityArray;
 	public var removed:EntityArray;
 	
-	public function new(includes:Array<Class<Dynamic>>, ?excludes:Array<Class<Dynamic>> = null, ?context:Context = null):Void
+	public function new(includes:Array<Class<Dynamic>>, ?excludes:Array<Class<Dynamic>> = null, ?_entities:EntityManager = null):Void
 	{
 		added = new EntityArray();
 		updated = new EntityArray();
 		removed = new EntityArray();
 		
-		super(includes, excludes, context);
+		super(includes, excludes, _entities);
 	}
 	
 	public function clear():Void 

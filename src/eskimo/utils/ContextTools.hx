@@ -31,17 +31,17 @@ class ContextTools
 	
 	public inline static function view(context:Context, includes:Array<Class<Dynamic>>, ?excludes:Array<Class<Dynamic>> = null):View
 	{
-		return new View(includes, excludes, context);
+		return new View(includes, excludes, context.components);
 	}
 	
 	public inline static function eventview(context:Context, includes:Array<Class<Dynamic>>, ?excludes:Array<Class<Dynamic>> = null):View
 	{
-		return new EventView(includes, excludes, context);
+		return new EventView(includes, excludes, context.components);
 	}
 	
 	public inline static function bufferview(context:Context, includes:Array<Class<Dynamic>>, ?excludes:Array<Class<Dynamic>> = null):View
 	{
-		return new BufferView(includes, excludes, context);
+		return new BufferView(includes, excludes, context.components);
 	}
 	
 }

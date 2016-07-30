@@ -14,7 +14,7 @@ class Context
 	public function new():Void
 	{
 		components = new ComponentManager();
-		entities = new EntityManager(this);
+		entities = new EntityManager(components);
 	}
 	
 }

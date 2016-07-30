@@ -9,7 +9,7 @@ import eskimo.Entity;
 class EntityManager
 {
 	
-	public var context:Context;
+	public var components:ComponentManager;
 	
 	private var entityId:Int;
 	public var entities:Array<Entity>;
@@ -17,9 +17,9 @@ class EntityManager
 	public var onCreate:Entity->Void;
 	public var onDestroy:Entity->Void;
 	
-	public function new(context:Context):Void
+	public function new(components:ComponentManager):Void
 	{
-		this.context = context;
+		this.components = components;
 		
 		entityId = 0;
 		entities = new Array<Entity>();
@@ -27,7 +27,7 @@ class EntityManager
 	
 	public function create(components:Array<Dynamic> = null):Entity
 	{
-		var e = new Entity(context, entityId++);
+		var e = new Entity(this, entityId++);
 		entities.push(e);
 		
 		components = (components == null) ? [] : components;
@@ -42,7 +42,7 @@ class EntityManager
 	{
 		if (onDestroy != null) onDestroy(e);
 		
-		context.components.clear(e);
+		components.clear(e);
 		entities.remove(e);
 	}
 	
