@@ -1,10 +1,11 @@
 package;
-import eskimo.BufferView;
 import eskimo.Context;
 import eskimo.Entity;
-import eskimo.EventView;
-import eskimo.View;
+import eskimo.views.BufferView;
+import eskimo.views.EventView;
+import eskimo.views.View;
 import haxe.Json;
+
 import Components;
 
 /**

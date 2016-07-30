@@ -1,9 +1,9 @@
 package;
-import eskimo.BufferView;
+import eskimo.views.BufferView;
 import eskimo.Context;
 import eskimo.Entity;
-import eskimo.EventView;
-import eskimo.View;
+import eskimo.views.EventView;
+import eskimo.views.View;
 import eskimo.filters.Filter;
 import eskimo.filters.NoFilter;
 import eskimo.utils.SystemCreator;

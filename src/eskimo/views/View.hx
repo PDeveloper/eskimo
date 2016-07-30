@@ -3,7 +3,6 @@ import eskimo.ComponentManager;
 import eskimo.bits.BitFlag;
 import eskimo.ComponentManager.ComponentType;
 import eskimo.containers.EntityArray;
-import eskimo.utils.Benchmarker;
 
 /**
  * ...
