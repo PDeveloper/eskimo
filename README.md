@@ -13,40 +13,59 @@ Eskimo is an entity-component system written in haxe, focused on having a small 
 * Use a `BufferView` to maintain a cache of entity components. Update the buffer with `.buffer()`.
 
 ##### API Overview
-* `Context` - entry point to using eskimo.
-  * `entities.create():Entity` - creates and returns a new `Entity`.
-  * `entities.destroy(entity):Void` - destroys the passed `Entity`.
-  * `using eskimo.utils.ContextTools` - for faster access for basic functions on a Context object.
+* `ComponentManager` - component management.
+  * `.set(entity, myComponent):Void` - set an object of any class to an `Entity`.
+  * `.get(entity, MyComponentClass):MyComponentClass` - get a component of an `Entity` by class.
+  * `.remove(entity, MyComponentClass):Void` - remove a component of an `Entity` by class.
+  * `.has(entity, MyComponentClass):Bool` - check if an `Entity` has a component type.
+  * `.clear(entity):Void` - remove all components of an `Entity`.
+* `EntityManager(ComponentManager)` - entity management.
+  * `.create(?[components]):Entity` - create an `Entity`.
+  * `.destroy(entity):Void` - destroy an `Entity`.
+  * `.clear():Void` - destroy all `Entity` objects.
 * `Entity`
   * `.set(myComponent):Void` - set an object of any class to this `Entity`.
   * `.get(MyComponentClass):MyComponentClass` - get a component of this `Entity` by class.
   * `.remove(MyComponentClass):Void` - remove a component of this `Entity` by class.
   * `.has(MyComponentClass):Bool` - check if this `Entity` has a component type.
-* `View([IncludeComponents..], ?[ExcludeComponents..], ?context)` - maintains a list of `Entity` objects corresponding to the `IncludeComponents` and `ExcludeComponents` criteria.
+* `View([IncludeComponents..], ?[ExcludeComponents..], ?entities)` - maintains a list of `Entity` objects corresponding to the `IncludeComponents` and `ExcludeComponents` criteria.
   * `.entities:Array<Entity>` - an array of entities currently meeting the criteria of this `View`.
   * `.destroy():Void` - destroy this `View` when no longer used.
-* `EventView([IncludeComponents..], ?[ExcludeComponents..], ?context)` - extends `View` with entity changes.
+* `EventView([IncludeComponents..], ?[ExcludeComponents..], ?entities)` - extends `View` with entity changes.
   * `.added:Array<Entity>` - an array of added entities to this `View`.
   * `.updated:Array<Entity>` - an array of updated entities.
   * `.removed:Array<Entity>` - an array of removed entities.
   * `.clear():Void` - clears `added`/`updated`/`removed` arrays.
-* `BufferView([IncludeComponents..], ?[ExcludeComponents..], ?context)` - extends `View` with a component buffer.
+* `BufferView([IncludeComponents..], ?[ExcludeComponents..], ?entities)` - extends `View` with a component buffer.
   * `.previous(entity, MyComponentClass):MyComponentClass` - previous component of the passed `Entity` as buffered by this `BufferView`.
   * `.buffer():Void` - buffers the current components of all entities in this `View`.
-* `SystemCreator(context)` - fast way to define some functionality with callbacks.
+* `SystemCreator(entities)` - fast way to define some functionality with callbacks.
   * `entities(onEntity:Entity->Void, filter:IFilter):Void` - calls the callback for all valid entities.
   * `added/updated/removed(onEntity:Entity->Void, filter:IFilter, clear = true):Void` - calls the callback for all valid entities, also clears the event queue if `clear` is set to true.
 * `IFilter` - filter objects to filter entities
-  * `Filter([IncludeComponents..], ?[ExcludeComponents], ?context)` - basic filtering based on entity components.
-  * `CallbackFilter(callback:Entity->Bool, [IncludeComponents..], ?[ExcludeComponents], ?context)` - like `Filter`, with an additional callback that gets called after passing component requirements.
+  * `Filter([IncludeComponents..], ?[ExcludeComponents], ?entities)` - basic filtering based on entity components.
+  * `CallbackFilter(callback:Entity->Bool, [IncludeComponents..], ?[ExcludeComponents], ?entities)` - like `Filter`, with an additional callback that gets called after passing component requirements.
+* `SystemManager(entities)` - system management and updating.
+  * `.add(system):Void` - adds a `System` to this manager.
+  * `.removes(system):Void` - removes a `System` to this manager.
+  * `.has(SystemClass):Void` - check if this manager has a `System` type.
+  * `.get(SystemClass):SystemClass` - get a `System` by class.
+  * `.update(delta):Void` - update all active `System` objects.
+* `System(?[SystemDependencies..])` - base class for all systems, can require other `System` types from the manager before becoming active.
+  * `.onActivate(systems)` - override to handle `System` activation, with owning `SystemManager` as argument.
+  * `.onUpdate(delta)` - override to handle `System` update, with delta time as argument.
+  * `.onDeactivate(systems)` - override to handle `System` deactivation, with owning `SystemManager` as argument.
+* [Deprecated] `Context` - entry point to using eskimo. (Use `ComponentManager` and `EntityManager` individually)
+  * `entities.create():Entity` - creates and returns a new `Entity`.
+  * `entities.destroy(entity):Void` - destroys the passed `Entity`.
+  * `using eskimo.utils.ContextTools` - for faster access for basic functions on a Context object.
 
 ##### Usage
 ```haxe
 package ;
-import eskimo.Context;
-import eskimo.View;
-
-using eskimo.utils.ContextTools;
+import eskimo.ComponentManager;
+import eskimo.EntityManager;
+import eskimo.views.View;
 
 class ComponentA {
 	public var string:String;
@@ -64,9 +83,11 @@ class ComponentB {
 class Main {
 
 	static function main():Void {
-		var context = new Context();
-		var entity0 = context.create();
-		var entity1 = context.create();
+		var components = new ComponentManager();
+		var entities = new EntityManager(components);
+		
+		var entity0 = entities.create();
+		var entity1 = entities.create();
 		
 		var component0a = new ComponentA('Entity 0 with Component A');
 		var component0b = new ComponentB(7);
@@ -76,8 +97,8 @@ class Main {
 		var component1b = new ComponentB(13);
 		entity1.set(component1b);
 		
-		var viewab = new View([ComponentA, ComponentB], context);
-		var viewb = new View([ComponentB], context);
+		var viewab = new View([ComponentA, ComponentB], entities);
+		var viewb = new View([ComponentB], entities);
 		
 		for (entity in viewab.entities) {
 			trace('Entity id: ${entity.id}');
@@ -107,7 +128,7 @@ Eskimo is currently focused on single-threaded execution. hxE2 attempted to addr
 
 Another problem addressed by Eskimo is the entry point to modifying entity components. Although probably less efficient, it is much clearer than hxE2. Setting and getting components *always* happens through the Entity instance itself, not through a `View`. In the future I'll add more performant methods in accessing components, but the concept will be the same - always directly setting/getting to/from the ComponentManager. This means that under the hood, event management becomes simpler and consistent, with views still able to control which events they process.
 
-Components no longer have a base class, and can be any object at all. Systems also are defined only by the `ISystem` interface. Like hxE2, using the provided systems and the SystemManager class to run them is completely optional, and considered a utility more than anything else. In the future, I am working on helper macros to save users from tedious house keeping, so that you can get right to coding system logic.
+Components no longer have a base class, and can be any object at all. Like hxE2, using the provided systems and the SystemManager class to run them is completely optional, and considered a utility more than anything else. In the future, I am working on helper macros to save users from tedious house keeping, so that you can get right to coding system logic.
 
 Views have a better defined role in eskimo than in hxE2 - at the core they *only* manage a list of entities that correspond to its filters. Previous iterations would have Views managing local component storage which only bloated things. I will add several types of views, starting with a basic "state" view, that only manages a list of entities, an "event" view, that will also manage a list of added/updated/removed entities, and a "buffer" view, that will store the previous component state of entities.
 
