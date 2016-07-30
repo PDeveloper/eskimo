@@ -2,10 +2,10 @@
 	"name": "eskimo",
 	"url": "https://github.com/PDeveloper/eskimo",
 	"license": "MIT",
-	"tags": ["entity","system","ecs","cross"],
+	"tags": ["entity","component","system","ecs","cross"],
 	"description": "A modular and simple entity system.",
-	"version": "0.0.2",
-	"releasenote": "Beta release. Fully functional and feature-complete enough to be useful.",
+	"version": "0.1.0",
+	"releasenote": "Cleaning up the API, as well as added a System API to help with structured System-based programming.",
 	"contributors": ["PDeveloper"],
 	"classPath" : "src"
 }
