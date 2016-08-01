@@ -1,6 +1,7 @@
 package eskimo.views;
 import eskimo.Entity;
 import eskimo.containers.EntityArray;
+import eskimo.filters.IFilter;
 import eskimo.views.View;
 
 /**
@@ -17,13 +18,13 @@ class EventView extends View
 	public var updated:EntityArray;
 	public var removed:EntityArray;
 	
-	public function new(includes:Array<Class<Dynamic>>, ?excludes:Array<Class<Dynamic>> = null, ?_entities:EntityManager = null):Void
+	public function new(filter:IFilter, ?_entities:EntityManager = null):Void
 	{
 		added = new EntityArray();
 		updated = new EntityArray();
 		removed = new EntityArray();
 		
-		super(includes, excludes, _entities);
+		super(filter, _entities);
 	}
 	
 	public function clear():Void 
@@ -50,7 +51,7 @@ class EventView extends View
 	
 	override public function check(e:Entity):Void 
 	{
-		if (e.flag.contains(includeFlag) && excludeFlag.contains(e.flag))
+		if (filter.contains(e))
 		{
 			if (removed.has(e)) removed.remove(e);
 			

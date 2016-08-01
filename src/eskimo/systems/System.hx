@@ -33,6 +33,11 @@ class System
 		__dependencies = dependencies != null? dependencies : [];
 	}
 	
+	public function onInitialize(systems:SystemManager):Void
+	{
+		
+	}
+	
 	public function onActivate(systems:SystemManager):Void
 	{
 		
@@ -44,6 +49,11 @@ class System
 	}
 	
 	public function onDeactivate(systems:SystemManager):Void
+	{
+		
+	}
+	
+	public function onDispose(systems:SystemManager):Void
 	{
 		
 	}

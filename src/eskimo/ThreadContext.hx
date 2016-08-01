@@ -8,7 +8,7 @@ import eskimo.Entity;
  * @author PDeveloper
  */
 
-using eskimo.utils.ContextTools;
+using eskimo.tools.ContextTools;
 
 class ThreadContext extends Context
 {

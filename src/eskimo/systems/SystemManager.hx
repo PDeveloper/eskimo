@@ -43,6 +43,8 @@ class SystemManager
 		system.__id = getSystemId(systemClassName);
 		systemFlag.setTrue(system.__id + 1);
 		
+		system.onInitialize(this);
+		
 		initializeDependencies(system);
 		evaluateSystems();
 	}
@@ -53,6 +55,8 @@ class SystemManager
 		
 		if (systems.remove(systemClassName))
 		{
+			system.onDispose(this);
+			
 			systemFlag.setFalse(system.__id + 1);
 			evaluateSystems();
 		}

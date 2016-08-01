@@ -2,6 +2,7 @@ package eskimo.views;
 import eskimo.ComponentManager.ComponentType;
 import eskimo.Entity;
 import eskimo.containers.Container;
+import eskimo.filters.IFilter;
 import eskimo.views.View;
 
 /**
@@ -48,7 +49,7 @@ class BufferView extends View
 	private var currentBuffers:Array<IBufferContainer>;
 	private var previousBuffers:Array<IBufferContainer>;
 	
-	public function new(includes:Array<Class<Dynamic>>, ?excludes:Array<Class<Dynamic>> = null, ?_entities:EntityManager = null):Void
+	public function new(filter:IFilter, ?_entities:EntityManager = null):Void
 	{
 		map = new Map<String, Int>();
 		
@@ -69,7 +70,7 @@ class BufferView extends View
 			previousBuffers.push(previousBuffer);
 		}
 		
-		super(includes, excludes, _entities);
+		super(filter, _entities);
 		
 		for (e in entities) for (b in previousBuffers) b.buffer(e);
 	}

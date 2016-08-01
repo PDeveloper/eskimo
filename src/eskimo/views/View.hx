@@ -4,6 +4,7 @@ import eskimo.EntityManager;
 import eskimo.bits.BitFlag;
 import eskimo.ComponentManager.ComponentType;
 import eskimo.containers.EntityArray;
+import eskimo.filters.IFilter;
 
 /**
  * ...
@@ -17,10 +18,7 @@ class View
 	
 	private var _entities:EntityManager;
 	
-	private var includeFlag:BitFlag;
-	private var includes:Array<Class<Dynamic>>;
-	private var excludeFlag:BitFlag;
-	private var excludes:Array<Class<Dynamic>>;
+	public var filter:IFilter;
 	
 	public var entities:EntityArray;
 	
@@ -28,13 +26,11 @@ class View
 	public var onUpdate:Entity->Void;
 	public var onRemove:Entity->Void;
 	
-	public function new(includes:Array<Class<Dynamic>>, ?excludes:Array<Class<Dynamic>> = null, ?_entities:EntityManager = null):Void
+	public function new(filter:IFilter, ?_entities:EntityManager = null):Void
 	{
-		this.includes = includes;
-		this.excludes = (excludes != null) ? excludes : new Array<Class<Dynamic>>();
-		
+		this.filter = filter;
 		entities = new EntityArray();
-		
+
 		if (_entities != null) initialize(_entities);
 	}
 	
@@ -42,19 +38,10 @@ class View
 	{
 		this._entities = _entities;
 		
-		includeFlag = new BitFlag();
-		for (index in 0...includes.length)
-		{
-			var include = includes[index];
-			
-			includeFlag.set(_entities.components.getType(include).id + 1, 1);
-			_entities.components.getContainer(include).addView(this, index);
-		}
+		filter.update(_entities.components);
 		
-		excludeFlag = new BitFlag();
-		if (excludes != null)
-			for (exclude in excludes) excludeFlag.set(_entities.components.getType(exclude).id + 1, 1);
-		excludeFlag.flip();
+		var includes = filter.getIncludes();
+		for (index in 0...includes.length) _entities.components.getContainer(includes[index]).addView(this, index);
 		
 		for (e in _entities.entities) check(e);
 	}
@@ -66,7 +53,7 @@ class View
 	
 	private function check(e:Entity):Void
 	{
-		if (e.flag.contains(includeFlag) && excludeFlag.contains(e.flag))
+		if (filter.contains(e))
 		{
 			if (!entities.has(e))
 			{
@@ -84,7 +71,7 @@ class View
 	
 	public function destroy():Void
 	{
-		for (include in includes) _entities.components.getContainer(include).removeView(this);
+		for (include in filter.getIncludes()) _entities.components.getContainer(include).removeView(this);
 	}
 	
 }

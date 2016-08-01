@@ -1,4 +1,4 @@
-package eskimo.utils;
+package eskimo.tools;
 import eskimo.Entity;
 import eskimo.EntityManager;
 import eskimo.views.EventView;
