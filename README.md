@@ -6,7 +6,7 @@ Eskimo is an entity-component system written in haxe, focused on having a small 
 * haxelib `haxelib install eskimo`
 
 ##### Features
-* Create and destroy `Entity` objects through an instance of the `Context` class.
+* Create a `ComponentManager` and `EntityManager`. `myEntityManager.create()` to create an entity.
 * Assign any class object as a component to an `Entity`.
 * Filter entities based on which components they have using a `View`.
 * Use an `EventView` to get lists of added, updated, or removed entities. Clear the events after processing with `.clear()`.
@@ -28,15 +28,15 @@ Eskimo is an entity-component system written in haxe, focused on having a small 
   * `.get(MyComponentClass):MyComponentClass` - get a component of this `Entity` by class.
   * `.remove(MyComponentClass):Void` - remove a component of this `Entity` by class.
   * `.has(MyComponentClass):Bool` - check if this `Entity` has a component type.
-* `View([IncludeComponents..], ?[ExcludeComponents..], ?entities)` - maintains a list of `Entity` objects corresponding to the `IncludeComponents` and `ExcludeComponents` criteria.
+* `View(filter:IFilter, ?entities)` - maintains a list of `Entity` objects corresponding to the filter.
   * `.entities:Array<Entity>` - an array of entities currently meeting the criteria of this `View`.
   * `.destroy():Void` - destroy this `View` when no longer used.
-* `EventView([IncludeComponents..], ?[ExcludeComponents..], ?entities)` - extends `View` with entity changes.
+* `EventView(filter:IFilter, ?entities)` - extends `View` with entity changes.
   * `.added:Array<Entity>` - an array of added entities to this `View`.
   * `.updated:Array<Entity>` - an array of updated entities.
   * `.removed:Array<Entity>` - an array of removed entities.
-  * `.clear():Void` - clears `added`/`updated`/`removed` arrays.
-* `BufferView([IncludeComponents..], ?[ExcludeComponents..], ?entities)` - extends `View` with a component buffer.
+  * `.clear():Void` - clears `added`/`updated`/`removed` arrays. (User `clearAdded()`/`clearUpdated()`/`clearRemoved()` to clear specific events.
+* `BufferView(filter:IFilter, ?entities)` - extends `View` with a component buffer.
   * `.previous(entity, MyComponentClass):MyComponentClass` - previous component of the passed `Entity` as buffered by this `BufferView`.
   * `.buffer():Void` - buffers the current components of all entities in this `View`.
 * `SystemCreator(entities)` - fast way to define some functionality with callbacks.
@@ -113,15 +113,6 @@ class Main {
 	}
 }
 ```
-
-##### Multi-Threading
-While Eskimo's core is focused on being single-threaded, using the ThreadContext creates a threadsafe barrier, as long as 1 golden rule is followed:
-
-**Components are immutable.**
-
-You cannot modify a component directly, instead, create a new one, assign the new values to it, and set it to the `Entity`. This ensures component consistency across threads.
-
-For a basic example of threading using Eskimo, see thread-sample in the samples folder.
 
 ##### Overview
 Eskimo is currently focused on single-threaded execution. hxE2 attempted to address this, but with overkill; every single View would be threadsafe, which is unnecessary (multiple systems running on 1 thread, multiple views in a single system, etc.)
