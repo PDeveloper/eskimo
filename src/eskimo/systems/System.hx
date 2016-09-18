@@ -6,7 +6,7 @@ import eskimo.bits.BitFlag;
  * @author PDeveloper
  */
 
-@:autoBuild(eskimo.systems.macros.ViewInitializer.build2())
+//@:autoBuild(eskimo.systems.macros.ViewInitializer.build2())
 class System
 {
 	

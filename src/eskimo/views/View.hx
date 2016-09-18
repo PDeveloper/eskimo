@@ -1,9 +1,7 @@
 package eskimo.views;
-import eskimo.ComponentManager;
-import eskimo.EntityManager;
-import eskimo.bits.BitFlag;
-import eskimo.ComponentManager.ComponentType;
+import eskimo.ComponentManager.IComponentType;
 import eskimo.containers.EntityArray;
+import eskimo.containers.IContainerListener;
 import eskimo.filters.IFilter;
 
 /**
@@ -11,67 +9,51 @@ import eskimo.filters.IFilter;
  * @author PDeveloper
  */
 
-using Lambda;
-
-class View
+class ViewBase extends EntityDispatcher implements IContainerListener
 {
-	
-	private var _entities:EntityManager;
 	
 	public var filter:IFilter;
 	
-	public var entities:EntityArray;
+	private var _entities:EntityManager;
 	
-	public var onAdd:Entity->Void;
-	public var onUpdate:Entity->Void;
-	public var onRemove:Entity->Void;
+	private var entities_array:EntityArray;
+	public var entities(get, null):Array<Entity>;
 	
-	public function new(filter:IFilter, ?_entities:EntityManager = null):Void
-	{
-		this.filter = filter;
-		entities = new EntityArray();
-
-		if (_entities != null) initialize(_entities);
-	}
-	
-	public function initialize(_entities:EntityManager):Void
+	public function new(_entities:EntityManager):Void
 	{
 		this._entities = _entities;
-		
-		filter.update(_entities.components);
-		
-		var includes = filter.getIncludes();
-		for (index in 0...includes.length) _entities.components.getContainer(includes[index]).addView(this, index);
-		
-		for (e in _entities.entities) check(e);
+		entities_array = new EntityArray();
 	}
 	
-	public function update(e:Entity, index:Int):Void
+	private function check(entity:Entity, type:IComponentType = null):Void
 	{
-		check(e);
-	}
-	
-	private function check(e:Entity):Void
-	{
-		if (filter.contains(e))
+		if (filter.contains(entity))
 		{
-			if (!entities.has(e))
+			if (!entities_array.has(entity))
 			{
-				entities.push(e);
-				if (onAdd != null) onAdd(e);
+				entities_array.push(entity);
+				for (listener in listeners) listener.onAdd(entity);
 			}
-			else if (onUpdate != null) onUpdate(e);
+			else for (listener in listeners) listener.onUpdate(entity, type);
 		}
-		else if (entities.has(e))
+		else if (entities_array.has(entity))
 		{
-			entities.remove(e);
-			if (onRemove != null) onRemove(e);
+			entities_array.remove(entity);
+			for (listener in listeners) listener.onRemove(entity);
 		}
 	}
 	
-	public function destroy():Void
+	public function update(e:Entity, type:IComponentType):Void 
 	{
-		for (include in filter.getIncludes()) _entities.components.getContainer(include).removeView(this);
+		check(e, type);
+	}
+	
+	function get_entities():Array<Entity>
+	{
+		return entities_array.entities;
 	}
 	
 }
+
+@:genericBuild(eskimo.views.macros.ViewBuilder.build())
+class View<Rest> {}

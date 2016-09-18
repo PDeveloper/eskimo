@@ -1,28 +1,14 @@
 package eskimo.containers;
 import eskimo.ComponentManager;
 import eskimo.ComponentManager.ComponentType;
-import eskimo.views.View;
+import eskimo.containers.Container.IContainerBase;
 
 /**
  * ...
  * @author PDeveloper
  */
 
-class ViewListener
-{
-	
-	public var view:View;
-	public var index:Int;
-	
-	public function new (view:View, index:Int):Void
-	{
-		this.view = view;
-		this.index = index;
-	}
-	
-}
-
-interface IContainer
+interface IContainerBase
 {
 	
 	public function getUnsafe(e:Entity):Dynamic;
@@ -31,14 +17,22 @@ interface IContainer
 	
 }
 
-class Container<T> implements IContainer
+interface IContainer<T> extends IContainerBase
+{
+	
+	public function set(e:Entity, component:T):Void;
+	public function get(e:Entity):T;
+	
+}
+
+class Container<T> implements IContainer<T>
 {
 	
 	public var type:ComponentType<T>;
 	public var manager:ComponentManager;
 	
 	private var storage:Array<T>;
-	private var views:Array<ViewListener>;
+	private var listeners:Array<IContainerListener>;
 	
 	public var onComponentSet:Entity->T->Void;
 	
@@ -48,7 +42,7 @@ class Container<T> implements IContainer
 		this.manager = manager;
 		
 		storage = new Array<T>();
-		views = new Array<ViewListener>();
+		listeners = new Array<IContainerListener>();
 	}
 	
 	private function _set(e:Entity, component:T):Void
@@ -62,7 +56,7 @@ class Container<T> implements IContainer
 		if (onComponentSet != null) onComponentSet(e, component);
 		manager._onComponentSet(e, type, component);
 		
-		for (view in views) view.view.update(e, view.index);
+		for (listener in listeners) listener.update(e, type);
 	}
 	
 	public function set(e:Entity, component:T):Void
@@ -90,19 +84,14 @@ class Container<T> implements IContainer
 		_set(e, null);
 	}
 	
-	// View API
-	public function addView(view:View, index:Int = 0):Void
+	public function listen(listener:IContainerListener):Void
 	{
-		views.push(new ViewListener(view, index));
+		listeners.push(listener);
 	}
 	
-	public function removeView(view:View):Void
+	public function unlisten(listener:IContainerListener):Void
 	{
-		views = views.filter(function (listener:ViewListener):Bool
-		{
-			if (listener.view == view) return false;
-			return true;
-		});
+		listeners.remove(listener);
 	}
 	
 }

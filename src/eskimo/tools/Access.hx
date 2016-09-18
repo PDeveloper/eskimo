@@ -9,7 +9,7 @@ import eskimo.containers.Container;
  * @author PDeveloper
  */
 
-@:generic class Access<T>
+class Access<T>
 {
 	
 	public var componentClass:Class<T>;
@@ -18,7 +18,6 @@ import eskimo.containers.Container;
 	public function new(componentClass:Class<T>, ?components:ComponentManager = null):Void
 	{
 		this.componentClass = componentClass;
-		
 		if (components != null) initialize(components);
 	}
 	

@@ -1,7 +1,7 @@
 package eskimo;
 import eskimo.containers.Container;
 import eskimo.bits.BitFlag;
-import eskimo.containers.Container.IContainer;
+import eskimo.containers.Container.IContainerBase;
 
 /**
  * ...
@@ -48,17 +48,17 @@ class ComponentManager
 {
 	
 	private var types:Map<String, IComponentType>;
-	private var containers:Array<IContainer>;
+	private var containers:Array<IContainerBase>;
 	
 	public var onComponentSet:Entity->Dynamic->Void;
 	
 	public function new():Void
 	{
 		types = new Map<String, IComponentType>();
-		containers = new Array<IContainer>();
+		containers = new Array<IContainerBase>();
 	}
 	
-	@:allow(eskimo.containers.Container)
+	@:allow(eskimo.containers.IContainer)
 	private function _onComponentSet<T>(e:Entity, type:ComponentType<T>, component:T):Void
 	{
 		if (onComponentSet != null) onComponentSet(e, component);

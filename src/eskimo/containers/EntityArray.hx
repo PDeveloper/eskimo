@@ -43,11 +43,6 @@ class EntityArray
 		return has_entities[e.id];
 	}
 	
-	public inline function iterator():Iterator<Entity>
-	{
-		return entities.iterator();
-	}
-	
 	function get_length():Int 
 	{
 		return entities.length;

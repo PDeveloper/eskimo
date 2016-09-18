@@ -14,10 +14,10 @@ using Lambda;
 class Filter implements IFilter
 {
 	
-	private var include_flag:BitFlag;
+	public var includeFlag:BitFlag;
 	private var includes:Array<Class<Dynamic>>;
 	
-	private var exclude_flag:BitFlag;
+	public var excludeFlag:BitFlag;
 	private var excludes:Array<Class<Dynamic>>;
 	
 	public function new(includes:Array<Class<Dynamic>>, excludes:Array<Class<Dynamic>> = null, components:ComponentManager = null):Void
@@ -25,8 +25,8 @@ class Filter implements IFilter
 		this.includes = includes;
 		this.excludes = excludes == null ? [] : excludes;
 		
-		include_flag = new BitFlag();
-		exclude_flag = new BitFlag();
+		includeFlag = new BitFlag();
+		excludeFlag = new BitFlag();
 		if (components != null) update(components);
 	}
 	
@@ -52,17 +52,17 @@ class Filter implements IFilter
 	
 	public function update(components:ComponentManager):Void
 	{
-		include_flag.clear();
-		for (componentClass in includes) include_flag.setTrue(components.getType(componentClass).id + 1);
+		includeFlag.clear();
+		for (componentClass in includes) includeFlag.setTrue(components.getType(componentClass).id + 1);
 		
-		exclude_flag.clear();
-		for (componentClass in excludes) exclude_flag.setTrue(components.getType(componentClass).id + 1);
-		exclude_flag.flip();
+		excludeFlag.clear();
+		for (componentClass in excludes) excludeFlag.setTrue(components.getType(componentClass).id + 1);
+		excludeFlag.flip();
 	}
 	
 	public inline function contains(entity:Entity):Bool
 	{
-		return entity.flag.contains(include_flag) && exclude_flag.contains(entity.flag);
+		return entity.flag.contains(includeFlag) && excludeFlag.contains(entity.flag);
 	}
 	
 	public function toString():String
