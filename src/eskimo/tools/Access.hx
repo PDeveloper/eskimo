@@ -27,22 +27,22 @@ import eskimo.containers.Container;
 		this.container = components.getContainer(componentClass);
 	}
 	
-	public function set(e:Entity, component:T):Void
+	public inline function set(e:Entity, component:T):Void
 	{
 		container.set(e, component);
 	}
 	
-	public function get(e:Entity):T
+	public inline function get(e:Entity):T
 	{
 		return container.get(e);
 	}
 	
-	public function has(e:Entity):Bool
+	public inline function has(e:Entity):Bool
 	{
 		return container.has(e);
 	}
 	
-	public function remove(e:Entity):Void
+	public inline function remove(e:Entity):Void
 	{
 		container.remove(e);
 	}
