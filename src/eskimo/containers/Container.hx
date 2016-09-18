@@ -31,7 +31,6 @@ interface IContainer
 	
 }
 
-@:generic
 class Container<T> implements IContainer
 {
 	
