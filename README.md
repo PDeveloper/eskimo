@@ -10,6 +10,7 @@ Eskimo is an entity-component system written in haxe, focused on having a small 
 * Assign any class object as a component to an `Entity`.
 * Filter entities based on which components they have using a `View`.
 * Use an `EventView` to get lists of added, updated, or removed entities. Clear the events after processing with `.clear()`.
+* `View`s generate fast component access functions. `MyComponentType => view.getMyComponentType(entity)/setMyComponentType(entity, myComponentType)`. If the typename ends with "Component", that will be omitted: `TransformComponent => view.getTransform(entity)/setTransform(entity, transform)`.
 
 ##### API Overview
 * `ComponentManager` - component management.
@@ -30,6 +31,8 @@ Eskimo is an entity-component system written in haxe, focused on having a small 
 * `View<ComponentClass..>(entities)` - maintains a list of `Entity` objects corresponding to the `IncludeComponents` criteria.
   * `.entities:Array<Entity>` - an array of entities currently meeting the criteria of this `View`.
   * `.dispose():Void` - destroy this `View` when no longer used.
+  * `.getComponentType(entity):ComponentType` - generated component getter.
+  * `.setComponentType(entity, componentType):Void` - generated component setter.
 * `EventView(dispatcher:EntityDispatcher, ?Filter)` - pass a `View` object to track entity changes. Optionally filter component updates.
   * `.added:Array<Entity>` - an array of added entities to this `View`.
   * `.updated:Array<Entity>` - an array of updated entities.
