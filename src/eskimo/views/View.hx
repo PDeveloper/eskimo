@@ -1,7 +1,9 @@
 package eskimo.views;
 import eskimo.ComponentManager.IComponentType;
+import eskimo.EntityManager;
 import eskimo.containers.EntityArray;
 import eskimo.containers.IContainerListener;
+import eskimo.filters.BitFilter;
 import eskimo.filters.IFilter;
 
 /**
@@ -19,10 +21,22 @@ class ViewBase extends EntityDispatcher implements IContainerListener
 	private var entities_array:EntityArray;
 	public var entities(get, null):Array<Entity>;
 	
-	public function new(_entities:EntityManager):Void
+	public function new(_entities:EntityManager = null, _filter:IFilter = null):Void
+	{
+		this.filter = _filter != null ? _filter : new BitFilter([]);
+		entities_array = new EntityArray();
+		
+		if (_entities != null) initialize(_entities);
+	}
+	
+	public function initialize(_entities:EntityManager):Void
 	{
 		this._entities = _entities;
-		entities_array = new EntityArray();
+	}
+	
+	public function dispose():Void
+	{
+		
 	}
 	
 	private function check(entity:Entity, type:IComponentType = null):Void

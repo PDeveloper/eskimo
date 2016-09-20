@@ -6,6 +6,7 @@ import eskimo.bits.BitFlag;
  * ...
  * @author ...
  */
+
 class SystemManager
 {
 	

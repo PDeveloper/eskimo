@@ -1,7 +1,7 @@
 package eskimo.views;
 import eskimo.ComponentManager;
 import eskimo.Entity;
-import eskimo.filters.Filter;
+import eskimo.filters.BitFilter;
 import eskimo.containers.EntityArray;
 import eskimo.containers.IContainerListener;
 

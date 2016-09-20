@@ -57,11 +57,11 @@ class ViewBuilder
 			
 			var fields:Array<Field> = [];
 			var constructorExprs:Array<Expr> = [];
+			var initializorExprs:Array<Expr> = [];
 			var destructorExprs:Array<Expr> = [];
 			var typeParams:Array<TypeParamDecl> = [];
 			
-			constructorExprs.push(macro super(_entities));
-			constructorExprs.push(macro this.filter = new eskimo.filters.Filter([]));
+			constructorExprs.push(macro super(_entities, _filter));
 			
 			for (i in 0...arity) {
 				var typePack = switch (types[i])
@@ -79,15 +79,21 @@ class ViewBuilder
 				var fullType = typePack.concat([typeName]);
 				var typeString = fullType.join('.');
 				
-				var fieldName = 'container$i';
+				var accessorName = typeName;
+				if (accessorName.substr( -9) == 'Component') accessorName = accessorName.substr(0, accessorName.length - 9);
+				
+				var containerName = accessorName.substr(0, 1).toLowerCase() + accessorName.substr(1);
+				
+				var fieldName = '${containerName}Container';
 				var genericName = 'T$i';
 				typeParams.push({name: genericName});
 				var ct = TPath({pack: typePack, name: typeName});
 				
-				constructorExprs.push(macro this.$fieldName = cast _entities.components.getContainer(Type.resolveClass( $v{typeString} )));
-				constructorExprs.push(macro _entities.components.getContainer(Type.resolveClass( $v{typeString} )).listen(this));
+				initializorExprs.push(macro super.initialize(_entities));
+				initializorExprs.push(macro this.$fieldName = cast _entities.components.getContainer(Type.resolveClass( $v{typeString} )));
+				initializorExprs.push(macro _entities.components.getContainer(Type.resolveClass( $v{typeString} )).listen(this));
 				destructorExprs.push(macro _entities.components.getContainer(Type.resolveClass( $v{typeString} )).unlisten(this));
-				constructorExprs.push(macro filter.include(Type.resolveClass( $v{typeString} )));
+				initializorExprs.push(macro filter.include(Type.resolveClass( $v{typeString} )));
 				
 				var meta:Metadata = [];
 				fields.push({
@@ -104,7 +110,7 @@ class ViewBuilder
 				
 				fields.push({
 					pos: pos,
-					name: 'get$typeName',
+					name: 'get$accessorName',
 					access: [APublic, AInline],
 					kind: FFun({
 						args: [{name: 'entity', type: TPath({pack: ['eskimo'], name: 'Entity'})}],
@@ -120,7 +126,7 @@ class ViewBuilder
 				
 				fields.push({
 					pos: pos,
-					name: 'set$typeName',
+					name: 'set$accessorName',
 					access: [APublic, AInline],
 					kind: FFun({
 						args: [{name: 'entity', type: TPath({pack: ['eskimo'], name: 'Entity'})},
@@ -134,15 +140,16 @@ class ViewBuilder
 				});
 			}
 			
-			constructorExprs.push(macro filter.update(_entities.components));
-			constructorExprs.push(macro for (entity in _entities.entities) check(entity));
+			initializorExprs.push(macro filter.update(_entities.components));
+			initializorExprs.push(macro for (entity in _entities.entities) check(entity));
 			
 			fields.push({
 				pos: pos,
 				name: "new",
 				access: [APublic],
 				kind: FFun({
-					args: [{name: '_entities', type: TPath({pack: ['eskimo'], name: 'EntityManager'})}],
+					args: [	{name: '_entities', type: TPath({pack: ['eskimo'], name: 'EntityManager'}), opt: true},
+							{name: '_filter', type: TPath({pack: ['eskimo', 'filters'], name: 'IFilter'}), opt: true}],
 					ret: macro : Void,
 					expr: macro $b{constructorExprs}
 				})
@@ -150,8 +157,19 @@ class ViewBuilder
 			
 			fields.push({
 				pos: pos,
+				name: "initialize",
+				access: [AOverride, APublic],
+				kind: FFun({
+					args: [	{name: '_entities', type: TPath({pack: ['eskimo'], name: 'EntityManager'})}],
+					ret: macro : Void,
+					expr: macro $b{initializorExprs}
+				})
+			});
+			
+			fields.push({
+				pos: pos,
 				name: "dispose",
-				access: [APublic],
+				access: [AOverride, APublic],
 				kind: FFun({
 					args: [],
 					ret: macro : Void,

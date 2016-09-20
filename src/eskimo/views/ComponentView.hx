@@ -1,4 +1,4 @@
-package eskimo.tools;
+package eskimo.views;
 import eskimo.ComponentManager;
 import eskimo.ComponentManager.ComponentType;
 import eskimo.EntityManager;
@@ -9,7 +9,7 @@ import eskimo.containers.Container;
  * @author PDeveloper
  */
 
-class Access<T>
+class ComponentView<T>
 {
 	
 	public var componentClass:Class<T>;

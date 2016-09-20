@@ -1,4 +1,5 @@
 package eskimo.filters;
+import eskimo.ComponentManager;
 import eskimo.Entity;
 import eskimo.EntityManager;
 
@@ -17,7 +18,7 @@ class NoFilter implements IFilter
 	public function exclude(componentClass:Class<Dynamic>):Void {}
 	public function dontExclude(componentClass:Class<Dynamic>):Void {}
 	
-	public function update(entities:EntityManager):Void {}
+	public function update(components:ComponentManager):Void {}
 	
 	public function contains(entity:Entity):Bool 
 	{

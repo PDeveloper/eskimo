@@ -45,7 +45,7 @@ class Container<T> implements IContainer<T>
 		listeners = new Array<IContainerListener>();
 	}
 	
-	private function _set(e:Entity, component:T):Void
+	private inline function _set(e:Entity, component:T):Void
 	{
 		if (component != null) e.flag.add(type.flag);
 		else e.flag.sub(type.flag);
@@ -67,6 +67,11 @@ class Container<T> implements IContainer<T>
 	public function get(e:Entity):T
 	{
 		return storage[e.id];
+	}
+	
+	public function getId(id:Int):T
+	{
+		return storage[id];
 	}
 	
 	public function getUnsafe(e:Entity):Dynamic

@@ -11,7 +11,7 @@ import eskimo.bits.BitFlag;
 
 using Lambda;
 
-class Filter implements IFilter
+class BitFilter implements IFilter
 {
 	
 	public var includeFlag:BitFlag;

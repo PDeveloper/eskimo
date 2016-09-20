@@ -7,7 +7,7 @@ import eskimo.EntityManager;
  * @author PDeveloper
  */
 
-class CallbackFilter extends Filter
+class CallbackFilter extends BitFilter
 {
 	
 	private var callback:Entity->Bool;

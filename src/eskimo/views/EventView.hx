@@ -2,7 +2,7 @@ package eskimo.views;
 import eskimo.ComponentManager.IComponentType;
 import eskimo.Entity;
 import eskimo.containers.EntityArray;
-import eskimo.filters.Filter;
+import eskimo.filters.BitFilter;
 import eskimo.filters.IFilter;
 
 /**
@@ -13,7 +13,7 @@ import eskimo.filters.IFilter;
 class EventView implements IEntityListener
 {
 	
-	public var filter:Filter;
+	public var filter:BitFilter;
 	
 	private var added_array = new EntityArray();
 	public var  added(get, null):Array<Entity>;
@@ -24,7 +24,7 @@ class EventView implements IEntityListener
 	private var removed_array = new EntityArray();
 	public var  removed(get, null):Array<Entity>;
 	
-	public function new(dispatcher:EntityDispatcher, filter:Filter = null):Void
+	public function new(dispatcher:EntityDispatcher, filter:BitFilter = null):Void
 	{
 		dispatcher.listen(this);
 		this.filter = filter;
