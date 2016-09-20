@@ -89,12 +89,24 @@ class ViewBuilder
 				
 				var ct = TPath({pack: typePack, name: typeName});
 				
+				var pack = typePack;
+				var module = typeName;
+				
+				var typeExpr = macro $i{pack[0]};
+				for (idx in 1...pack.length){
+					var field = pack[idx];
+					var field = $i{field};
+					typeExpr = macro $typeExpr.$field;
+				}
+				var module_i = $i{module};
+				typeExpr = macro $typeExpr.$module_i;
+				
 				initializorExprs.push(macro super.initialize(_entities));
-				initializorExprs.push(macro this.$fieldName = cast _entities.components.getContainer(Type.resolveClass( $v{typeString} )));
-				initializorExprs.push(macro this.$arrayName = cast _entities.components.getContainer(Type.resolveClass( $v{typeString} )).storage);
-				initializorExprs.push(macro _entities.components.getContainer(Type.resolveClass( $v{typeString} )).listen(this));
-				destructorExprs.push(macro _entities.components.getContainer(Type.resolveClass( $v{typeString} )).unlisten(this));
-				initializorExprs.push(macro filter.include(Type.resolveClass( $v{typeString} )));
+				initializorExprs.push(macro this.$fieldName = _entities.components.getContainer($typeExpr));
+				initializorExprs.push(macro this.$arrayName = this.$fieldName.storage);
+				initializorExprs.push(macro this.$fieldName.listen(this));
+				destructorExprs.push(macro this.$fieldName.unlisten(this));
+				initializorExprs.push(macro filter.include($typeExpr));
 				
 				var meta:Metadata = [];
 				fields.push({
@@ -129,6 +141,19 @@ class ViewBuilder
 						ret: macro : $ct,
 						expr: macro $b{[
 							macro return this.$arrayName[entity.id]
+						]}
+					}),
+				});
+				
+				fields.push({
+					pos: pos,
+					name: 'get${accessorName}Id',
+					access: [APublic, AInline],
+					kind: FFun({
+						args: [{name: 'id', type: macro : Int}],
+						ret: macro : $ct,
+						expr: macro $b{[
+							macro return this.$arrayName[id]
 						]}
 					}),
 				});
