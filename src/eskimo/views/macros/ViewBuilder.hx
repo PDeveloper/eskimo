@@ -85,12 +85,13 @@ class ViewBuilder
 				var containerName = accessorName.substr(0, 1).toLowerCase() + accessorName.substr(1);
 				
 				var fieldName = '${containerName}Container';
-				var genericName = 'T$i';
-				typeParams.push({name: genericName});
+				var arrayName = '${containerName}Array';
+				
 				var ct = TPath({pack: typePack, name: typeName});
 				
 				initializorExprs.push(macro super.initialize(_entities));
 				initializorExprs.push(macro this.$fieldName = cast _entities.components.getContainer(Type.resolveClass( $v{typeString} )));
+				initializorExprs.push(macro this.$arrayName = cast _entities.components.getContainer(Type.resolveClass( $v{typeString} )).storage);
 				initializorExprs.push(macro _entities.components.getContainer(Type.resolveClass( $v{typeString} )).listen(this));
 				destructorExprs.push(macro _entities.components.getContainer(Type.resolveClass( $v{typeString} )).unlisten(this));
 				initializorExprs.push(macro filter.include(Type.resolveClass( $v{typeString} )));
@@ -107,6 +108,17 @@ class ViewBuilder
 					})),
 					meta: meta,
 				});
+				fields.push({
+					pos: pos,
+					name: arrayName,
+					access: [APublic],
+					kind: FVar(TPath({
+							pack: [],
+							name: 'Array',
+							params: [TPType(macro : $ct)]
+					})),
+					meta: meta,
+				});
 				
 				fields.push({
 					pos: pos,
@@ -116,10 +128,9 @@ class ViewBuilder
 						args: [{name: 'entity', type: TPath({pack: ['eskimo'], name: 'Entity'})}],
 						ret: macro : $ct,
 						expr: macro $b{[
-							macro return this.$fieldName.get(entity)
+							macro return this.$arrayName[entity.id]
 						]}
 					}),
-					meta: meta,
 				});
 				
 				var camelTypeName = typeName.substr(0, 1).toLowerCase() + typeName.substr(1);
@@ -136,7 +147,6 @@ class ViewBuilder
 							macro return this.$fieldName.set(entity, $i{camelTypeName})
 						]}
 					}),
-					meta: meta,
 				});
 			}
 			
@@ -182,7 +192,7 @@ class ViewBuilder
 				pack: [],
 				name: name,
 				meta: [],
-				params: typeParams,
+				//params: typeParams,
 				kind: TDClass({
 					pack: ['eskimo', 'views'],
 					name: 'View',
@@ -194,7 +204,8 @@ class ViewBuilder
 			arityMap[types_string] = true;
 		}
 		
-        return TPath({pack: [], name: name, params: [for (t in types) TPType(t.toComplexType())]});
+        //return TPath({pack: [], name: name, params: [for (t in types) TPType(t.toComplexType())]});
+        return TPath({pack: [], name: name});
 	}
 	
 }

@@ -25,13 +25,13 @@ interface IContainer<T> extends IContainerBase
 	
 }
 
-class Container<T> implements IContainer<T>
+class Container<T> implements IContainerBase
 {
 	
 	public var type:ComponentType<T>;
 	public var manager:ComponentManager;
 	
-	private var storage:Array<T>;
+	public var storage:Array<T>;
 	private var listeners:Array<IContainerListener>;
 	
 	public var onComponentSet:Entity->T->Void;
@@ -67,11 +67,6 @@ class Container<T> implements IContainer<T>
 	public function get(e:Entity):T
 	{
 		return storage[e.id];
-	}
-	
-	public function getId(id:Int):T
-	{
-		return storage[id];
 	}
 	
 	public function getUnsafe(e:Entity):Dynamic

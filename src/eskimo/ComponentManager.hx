@@ -16,7 +16,6 @@ interface IComponentType
 	public function getClass():Class<Dynamic>;
 }
 
-@:generic
 class ComponentType<T> implements IComponentType
 {
 	
@@ -58,7 +57,7 @@ class ComponentManager
 		containers = new Array<IContainerBase>();
 	}
 	
-	@:allow(eskimo.containers.IContainer)
+	@:allow(eskimo.containers.IContainerBase)
 	private function _onComponentSet<T>(e:Entity, type:ComponentType<T>, component:T):Void
 	{
 		if (onComponentSet != null) onComponentSet(e, component);
