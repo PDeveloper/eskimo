@@ -10,17 +10,22 @@ import eskimo.containers.IContainerListener;
  * @author PDeveloper
  */
 
-class EntityDispatcher
+class EntityDispatcher implements IEntityDispatcher
 {
 	
-	public var listeners = new Array<IEntityListener>();
+	public var listeners:Array<IEntityListener>;
 	
-	public function listen(listener:IEntityListener):Void
+	public inline function new():Void
+	{
+		listeners = new Array<IEntityListener>();
+	}
+	
+	public inline function listen(listener:IEntityListener):Void
 	{
 		listeners.push(listener);
 	}
 	
-	public function unlisten(listener:IEntityListener):Void
+	public inline function unlisten(listener:IEntityListener):Void
 	{
 		listeners.remove(listener);
 	}

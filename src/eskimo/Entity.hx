@@ -16,7 +16,7 @@ class Entity
 	
 	public var flag:BitFlag;
 	
-	public function new(entities:EntityManager, id:Int):Void
+	public inline function new(entities:EntityManager, id:Int):Void
 	{
 		this.entities = entities;
 		this.id = id;
@@ -24,32 +24,32 @@ class Entity
 		this.flag = new BitFlag();
 	}
 	
-	public function set<T>(component:T):Void
+	public inline function set<T>(component:T):Void
 	{
 		entities.components.set(this, component);
 	}
 	
-	public function get<T>(componentClass:Class<T>):T
+	public inline function get<T>(componentClass:Class<T>):T
 	{
 		return entities.components.get(this, componentClass);
 	}
 	
-	public function remove<T>(componentClass:Class<T>):Void
+	public inline function remove<T>(componentClass:Class<T>):Void
 	{
 		entities.components.remove(this, componentClass);
 	}
 	
-	public function has<T>(componentClass:Class<T>):Bool
+	public inline function has<T>(componentClass:Class<T>):Bool
 	{
 		return entities.components.has(this, componentClass);
 	}
 	
-	public function clear():Void
+	public inline function clear():Void
 	{
 		entities.components.clear(this);
 	}
 	
-	public function destroy():Void
+	public inline function destroy():Void
 	{
 		entities.destroy(this);
 	}

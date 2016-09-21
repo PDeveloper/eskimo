@@ -21,11 +21,13 @@ class ViewBase extends EntityDispatcher implements IContainerListener
 	private var entities_array:EntityArray;
 	public var entities(get, null):Array<Entity>;
 	
-	public function new(_entities:EntityManager = null, _filter:IFilter = null):Void
+	public inline function new(_entities:EntityManager = null, _filter:IFilter = null):Void
 	{
-		this.filter = _filter != null ? _filter : new BitFilter([]);
+		super();
+		
 		entities_array = new EntityArray();
 		
+		this.filter = _filter != null ? _filter : new eskimo.filters.BitFilter([]);
 		if (_entities != null) initialize(_entities);
 	}
 	

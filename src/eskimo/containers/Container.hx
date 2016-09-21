@@ -36,7 +36,7 @@ class Container<T> implements IContainerBase
 	
 	public var onComponentSet:Entity->T->Void;
 	
-	public function new(type:ComponentType<T>, manager:ComponentManager):Void
+	public inline function new(type:ComponentType<T>, manager:ComponentManager):Void
 	{
 		this.type = type;
 		this.manager = manager;
@@ -64,12 +64,12 @@ class Container<T> implements IContainerBase
 		_set(e, component);
 	}
 	
-	public function get(e:Entity):T
+	public inline function get(e:Entity):T
 	{
 		return storage[e.id];
 	}
 	
-	public function getUnsafe(e:Entity):Dynamic
+	public inline function getUnsafe(e:Entity):Dynamic
 	{
 		return storage[e.id];
 	}

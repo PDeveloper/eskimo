@@ -24,7 +24,7 @@ class EventView implements IEntityListener
 	private var removed_array = new EntityArray();
 	public var  removed(get, null):Array<Entity>;
 	
-	public function new(dispatcher:EntityDispatcher, filter:BitFilter = null):Void
+	public function new(dispatcher:IEntityDispatcher, filter:BitFilter = null):Void
 	{
 		dispatcher.listen(this);
 		this.filter = filter;

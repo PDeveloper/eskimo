@@ -1,5 +1,6 @@
 package eskimo.views.macros;
 import eskimo.bits.BitFlag;
+import eskimo.filters.BitFilter;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.ExprTools;
@@ -181,7 +182,7 @@ class ViewBuilder
 			fields.push({
 				pos: pos,
 				name: "new",
-				access: [APublic],
+				access: [APublic, AInline],
 				kind: FFun({
 					args: [	{name: '_entities', type: TPath({pack: ['eskimo'], name: 'EntityManager'}), opt: true},
 							{name: '_filter', type: TPath({pack: ['eskimo', 'filters'], name: 'IFilter'}), opt: true}],
