@@ -13,7 +13,7 @@ class EntityArray
 	
 	public var length(get, null):Int;
 	
-	public function new():Void
+	public inline function new():Void
 	{
 		has_entities = [];
 		entities = [];

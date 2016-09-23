@@ -25,6 +25,11 @@ class NoFilter implements IFilter
 		return true;
 	}
 	
+	public function containsType(type:IComponentType):Bool 
+	{
+		return true;
+	}
+	
 	public function getIncludes():Array<Class<Dynamic>> 
 	{
 		return [];

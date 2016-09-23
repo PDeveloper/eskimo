@@ -113,7 +113,7 @@ class ViewBuilder
 				fields.push({
 					pos: pos,
 					name: fieldName,
-					access: [APublic],
+					access: [APrivate],
 					kind: FVar(TPath({
 							pack: ['eskimo', 'containers'],
 							name: 'Container',
@@ -124,7 +124,7 @@ class ViewBuilder
 				fields.push({
 					pos: pos,
 					name: arrayName,
-					access: [APublic],
+					access: [APrivate],
 					kind: FVar(TPath({
 							pack: [],
 							name: 'Array',

@@ -59,7 +59,7 @@ class Container<T> implements IContainerBase
 		for (listener in listeners) listener.update(e, type);
 	}
 	
-	public function set(e:Entity, component:T):Void
+	public inline function set(e:Entity, component:T):Void
 	{
 		_set(e, component);
 	}

@@ -65,6 +65,11 @@ class BitFilter implements IFilter
 		return entity.flag.contains(includeFlag) && excludeFlag.contains(entity.flag);
 	}
 	
+	public function containsType(type:IComponentType):Bool
+	{
+		return includeFlag.contains(type.flag);
+	}
+	
 	public function toString():String
 	{
 		function stringifyClass(_class:Class<Dynamic>):String
