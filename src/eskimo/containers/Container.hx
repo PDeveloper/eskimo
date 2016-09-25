@@ -29,17 +29,17 @@ class Container<T> implements IContainerBase
 {
 	
 	public var type:ComponentType<T>;
-	public var manager:ComponentManager;
+	public var components:ComponentManager;
 	
 	public var storage:Array<T>;
 	private var listeners:Array<IContainerListener>;
 	
 	public var onComponentSet:Entity->T->Void;
 	
-	public inline function new(type:ComponentType<T>, manager:ComponentManager):Void
+	public inline function new(type:ComponentType<T>, components:ComponentManager):Void
 	{
 		this.type = type;
-		this.manager = manager;
+		this.components = components;
 		
 		storage = new Array<T>();
 		listeners = new Array<IContainerListener>();
@@ -47,14 +47,14 @@ class Container<T> implements IContainerBase
 	
 	private inline function _set(e:Entity, component:T):Void
 	{
-		if (component != null) e.flag.add(type.flag);
-		else e.flag.sub(type.flag);
+		if (component != null) components.flag(e).add(type.flag);
+		else components.flag(e).sub(type.flag);
 		
-		storage[e.id] = component;
+		storage[e] = component;
 		
 		// trigger callbacks
 		if (onComponentSet != null) onComponentSet(e, component);
-		manager._onComponentSet(e, type, component);
+		components._onComponentSet(e, type, component);
 		
 		for (listener in listeners) listener.update(e, type);
 	}
@@ -66,17 +66,17 @@ class Container<T> implements IContainerBase
 	
 	public inline function get(e:Entity):T
 	{
-		return storage[e.id];
+		return storage[e];
 	}
 	
 	public inline function getUnsafe(e:Entity):Dynamic
 	{
-		return storage[e.id];
+		return storage[e];
 	}
 	
 	public function has(e:Entity):Bool
 	{
-		return storage[e.id] != null;
+		return storage[e] != null;
 	}
 	
 	public function remove(e:Entity):Void

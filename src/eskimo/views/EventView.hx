@@ -1,4 +1,5 @@
 package eskimo.views;
+import eskimo.ComponentManager;
 import eskimo.ComponentManager.IComponentType;
 import eskimo.Entity;
 import eskimo.containers.EntityArray;
@@ -13,6 +14,8 @@ import eskimo.filters.IFilter;
 class EventView implements IEntityListener
 {
 	
+	public var parent:IEntityDispatcher;
+	
 	public var filter:IFilter;
 	
 	private var added_array = new EntityArray();
@@ -24,9 +27,11 @@ class EventView implements IEntityListener
 	private var removed_array = new EntityArray();
 	public var  removed(get, null):Array<Entity>;
 	
-	public function new(dispatcher:IEntityDispatcher, filter:IFilter = null):Void
+	public function new(parent:IEntityDispatcher, filter:IFilter = null):Void
 	{
-		dispatcher.listen(this);
+		this.parent = parent;
+		parent.listen(this);
+		
 		this.filter = filter;
 	}
 	
@@ -83,6 +88,11 @@ class EventView implements IEntityListener
 	public function clearRemoved():Void
 	{
 		while (removed_array.length > 0) removed_array.pop();
+	}
+	
+	public function dispose():Void
+	{
+		parent.unlisten(this);
 	}
 	
 }

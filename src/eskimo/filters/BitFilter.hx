@@ -14,6 +14,8 @@ using Lambda;
 class BitFilter implements IFilter
 {
 	
+	private var components:ComponentManager;
+	
 	public var includeFlag:BitFlag;
 	private var includes:Array<Class<Dynamic>>;
 	
@@ -52,6 +54,8 @@ class BitFilter implements IFilter
 	
 	public function update(components:ComponentManager):Void
 	{
+		this.components = components;
+		
 		includeFlag.clear();
 		for (componentClass in includes) includeFlag.setTrue(components.getType(componentClass).id + 1);
 		
@@ -62,7 +66,7 @@ class BitFilter implements IFilter
 	
 	public inline function contains(entity:Entity):Bool
 	{
-		return entity.flag.contains(includeFlag) && excludeFlag.contains(entity.flag);
+		return components.flag(entity).contains(includeFlag) && excludeFlag.contains(components.flag(entity));
 	}
 	
 	public function containsType(type:IComponentType):Bool

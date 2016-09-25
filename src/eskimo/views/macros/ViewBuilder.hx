@@ -141,20 +141,7 @@ class ViewBuilder
 						args: [{name: 'entity', type: TPath({pack: ['eskimo'], name: 'Entity'})}],
 						ret: macro : $ct,
 						expr: macro $b{[
-							macro return this.$arrayName[entity.id]
-						]}
-					}),
-				});
-				
-				fields.push({
-					pos: pos,
-					name: 'get${accessorName}Id',
-					access: [APublic, AInline],
-					kind: FFun({
-						args: [{name: 'id', type: macro : Int}],
-						ret: macro : $ct,
-						expr: macro $b{[
-							macro return this.$arrayName[id]
+							macro return this.$arrayName[entity]
 						]}
 					}),
 				});

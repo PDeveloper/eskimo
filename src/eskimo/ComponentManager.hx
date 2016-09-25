@@ -49,18 +49,32 @@ class ComponentManager
 	private var types:Map<String, IComponentType>;
 	private var containers:Array<IContainerBase>;
 	
+	private var flags:Array<BitFlag>;
+	
 	public var onComponentSet:Entity->Dynamic->Void;
 	
 	public function new():Void
 	{
 		types = new Map<String, IComponentType>();
 		containers = new Array<IContainerBase>();
+		
+		flags = new Array<BitFlag>();
 	}
 	
 	@:allow(eskimo.containers.IContainerBase)
 	private function _onComponentSet<T>(e:Entity, type:ComponentType<T>, component:T):Void
 	{
 		if (onComponentSet != null) onComponentSet(e, component);
+	}
+	
+	public inline function create(entity:Entity):Void
+	{
+		flags[entity] = new BitFlag();
+	}
+	
+	public inline function flag(entity:Entity):BitFlag
+	{
+		return flags[entity];
 	}
 	
 	public function set<T>(e:Entity, component:T):Void

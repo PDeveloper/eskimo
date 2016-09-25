@@ -21,26 +21,26 @@ class EntityArray
 	
 	public inline function push(e:Entity):Int
 	{
-		has_entities[e.id] = true;
+		has_entities[e] = true;
 		return entities.push(e);
 	}
 	
 	public inline function remove(e:Entity):Bool
 	{
-		has_entities[e.id] = false;
+		has_entities[e] = false;
 		return entities.remove(e);
 	}
 	
 	public inline function pop():Entity
 	{
 		var e = entities.pop();
-		has_entities[e.id] = false;
+		has_entities[e] = false;
 		return e;
 	}
 	
 	public inline function has(e:Entity):Bool
 	{
-		return has_entities[e.id];
+		return has_entities[e];
 	}
 	
 	function get_length():Int 

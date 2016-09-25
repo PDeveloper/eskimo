@@ -21,17 +21,19 @@ class EntityManager
 	{
 		this.components = components;
 		
-		entityId = 0;
+		entityId = 1;
 		entities = new Array<Entity>();
 	}
 	
 	public function create(components:Array<Dynamic> = null):Entity
 	{
-		var e = new Entity(this, entityId++);
+		var e = entityId++;
 		entities.push(e);
 		
+		this.components.create(e);
+		
 		components = (components == null) ? [] : components;
-		for (component in components) e.set(component);
+		for (component in components) this.components.set(e, component);
 		
 		if (onCreate != null) onCreate(e);
 		
