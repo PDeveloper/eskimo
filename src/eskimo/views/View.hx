@@ -19,13 +19,14 @@ class ViewBase extends EntityDispatcher implements IContainerListener
 	private var _entities:EntityManager;
 	
 	private var entities_array:EntityArray;
-	public var entities(get, null):Array<Entity>;
+	public var entities:Array<Entity>;
 	
 	public inline function new(_entities:EntityManager = null, _filter:IFilter = null):Void
 	{
 		super();
 		
 		entities_array = new EntityArray();
+		entities = entities_array.entities;
 		
 		this.filter = _filter != null ? _filter : new eskimo.filters.BitFilter([]);
 		if (_entities != null) initialize(_entities);
@@ -62,11 +63,6 @@ class ViewBase extends EntityDispatcher implements IContainerListener
 	public function update(e:Entity, type:IComponentType):Void 
 	{
 		check(e, type);
-	}
-	
-	function get_entities():Array<Entity>
-	{
-		return entities_array.entities;
 	}
 	
 }
