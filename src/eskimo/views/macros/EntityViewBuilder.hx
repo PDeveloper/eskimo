@@ -14,7 +14,7 @@ using haxe.macro.Tools;
  * @author PDeveloper
  */
 
-class ViewBuilder
+class EntityViewBuilder
 {
     static var arityMap = new Map<String, Bool>();
 	
@@ -22,7 +22,7 @@ class ViewBuilder
 	{
         return switch (Context.getLocalType())
 		{
-            case TInst(_.get() => {name: "View"}, types):
+            case TInst(_.get() => {name: "EntityView"}, types):
                 buildView(types);
             default:
                 throw false;
@@ -51,18 +51,76 @@ class ViewBuilder
 			types_strings.push(fullType);
 		}
 		var types_string = types_strings.join('_');
-        var name = 'View_$types_string';
+        var name = 'EntityView_$types_string';
 		
 		if (!arityMap.exists(types_string)) {
 			var pos = Context.currentPos();
 			
 			var fields:Array<Field> = [];
-			var constructorExprs:Array<Expr> = [];
-			var initializorExprs:Array<Expr> = [];
-			var destructorExprs:Array<Expr> = [];
+			var constructorExprs:Array<Expr> = [
+			macro this.entities = entities,
+			macro this.entity = entity
+			];
 			var typeParams:Array<TypeParamDecl> = [];
 			
-			constructorExprs.push(macro super(_entities, _filter));
+			fields.push({
+				pos: pos,
+				name: 'entity',
+				access: [APrivate],
+				kind: FVar(TPath({
+						pack: ['eskimo'],
+						name: 'Entity'
+				}))
+			});
+			
+			fields.push({
+				pos: pos,
+				name: 'entities',
+				access: [APublic],
+				kind: FVar(TPath({
+						pack: ['eskimo'],
+						name: 'EntityManager'
+				}))
+			});
+				
+			fields.push({
+				pos: pos,
+				name: 'set',
+				access: [APublic, AInline],
+				kind: FFun({
+					args: [{name: 'entity', type: TPath({pack: ['eskimo'], name: 'Entity'})}],
+					ret: macro : Void,
+					expr: macro $b{[
+						macro this.entity = entity
+					]}
+				}),
+			});
+			
+			fields.push({
+				pos: pos,
+				name: 'get',
+				access: [APublic, AInline],
+				kind: FFun({
+					args: [],
+					ret: macro : eskimo.Entity,
+					expr: macro $b{[
+						macro return entity
+					]}
+				}),
+			});
+				
+			fields.push({
+				pos: pos,
+				name: 'create',
+				access: [APublic, AInline],
+				kind: FFun({
+					args: [],
+					ret: macro : Void,
+					expr: macro $b{[
+						macro entity = entities.create()
+					]}
+				}),
+			});
 			
 			for (i in 0...arity) {
 				var typePack = switch (types[i])
@@ -102,12 +160,8 @@ class ViewBuilder
 				var module_i = $i{module};
 				typeExpr = macro $typeExpr.$module_i;
 				
-				initializorExprs.push(macro super.initialize(_entities));
-				initializorExprs.push(macro this.$fieldName = _entities.components.getContainer($typeExpr));
-				initializorExprs.push(macro this.$arrayName = this.$fieldName.storage);
-				initializorExprs.push(macro this.$fieldName.listen(this));
-				destructorExprs.push(macro this.$fieldName.unlisten(this));
-				initializorExprs.push(macro filter.include($typeExpr));
+				constructorExprs.push(macro this.$fieldName = entities.components.getContainer($typeExpr));
+				constructorExprs.push(macro this.$arrayName = this.$fieldName.storage);
 				
 				var meta:Metadata = [];
 				fields.push({
@@ -138,7 +192,7 @@ class ViewBuilder
 					name: 'get$accessorName',
 					access: [APublic, AInline],
 					kind: FFun({
-						args: [{name: 'entity', type: TPath({pack: ['eskimo'], name: 'Entity'})}],
+						args: [],
 						ret: macro : $ct,
 						expr: macro $b{[
 							macro return this.$arrayName[entity.id()]
@@ -151,7 +205,7 @@ class ViewBuilder
 					name: 'has$accessorName',
 					access: [APublic, AInline],
 					kind: FFun({
-						args: [{name: 'entity', type: TPath({pack: ['eskimo'], name: 'Entity'})}],
+						args: [],
 						ret: macro : Bool,
 						expr: macro $b{[
 							macro return this.$arrayName[entity.id()] != null
@@ -164,7 +218,7 @@ class ViewBuilder
 					name: 'remove$accessorName',
 					access: [APublic, AInline],
 					kind: FFun({
-						args: [{name: 'entity', type: TPath({pack: ['eskimo'], name: 'Entity'})}],
+						args: [],
 						ret: macro : Void,
 						expr: macro $b{[
 							macro this.$fieldName.set(entity, null)
@@ -179,50 +233,24 @@ class ViewBuilder
 					name: 'set$accessorName',
 					access: [APublic, AInline],
 					kind: FFun({
-						args: [{name: 'entity', type: TPath({pack: ['eskimo'], name: 'Entity'})},
-								{name: '$camelTypeName', type: macro : $ct }],
+						args: [{name: '$camelTypeName', type: macro : $ct }],
 						ret: macro : Void,
 						expr: macro $b{[
-							macro return this.$fieldName.set(entity, $i{camelTypeName})
+							macro this.$fieldName.set(entity, $i{camelTypeName})
 						]}
 					}),
 				});
 			}
-			
-			initializorExprs.push(macro filter.update(_entities.components));
-			initializorExprs.push(macro for (entity in _entities.entities) check(entity));
 			
 			fields.push({
 				pos: pos,
 				name: "new",
 				access: [APublic, AInline],
 				kind: FFun({
-					args: [	{name: '_entities', type: TPath({pack: ['eskimo'], name: 'EntityManager'}), opt: true},
-							{name: '_filter', type: TPath({pack: ['eskimo', 'filters'], name: 'IFilter'}), opt: true}],
+					args: [	{name: 'entities', type: TPath({pack: ['eskimo'], name: 'EntityManager'})},
+						{name: 'entity', type: TPath({pack: ['eskimo'], name: 'Entity'}), opt: true}],
 					ret: macro : Void,
 					expr: macro $b{constructorExprs}
-				})
-			});
-			
-			fields.push({
-				pos: pos,
-				name: "initialize",
-				access: [AOverride, APublic],
-				kind: FFun({
-					args: [	{name: '_entities', type: TPath({pack: ['eskimo'], name: 'EntityManager'})}],
-					ret: macro : Void,
-					expr: macro $b{initializorExprs}
-				})
-			});
-			
-			fields.push({
-				pos: pos,
-				name: "dispose",
-				access: [AOverride, APublic],
-				kind: FFun({
-					args: [],
-					ret: macro : Void,
-					expr: macro $b{destructorExprs}
 				})
 			});
 			
@@ -231,11 +259,7 @@ class ViewBuilder
 				pack: [],
 				name: name,
 				meta: [],
-				kind: TDClass({
-					pack: ['eskimo', 'views'],
-					name: 'View',
-					sub: 'ViewBase'
-				}),
+				kind: TDClass(),
 				fields: fields
 			});
 			

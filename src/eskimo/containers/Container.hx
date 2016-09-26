@@ -50,7 +50,7 @@ class Container<T> implements IContainerBase
 		if (component != null) components.flag(e).add(type.flag);
 		else components.flag(e).sub(type.flag);
 		
-		storage[e] = component;
+		storage[e.id()] = component;
 		
 		// trigger callbacks
 		if (onComponentSet != null) onComponentSet(e, component);
@@ -66,17 +66,17 @@ class Container<T> implements IContainerBase
 	
 	public inline function get(e:Entity):T
 	{
-		return storage[e];
+		return storage[e.id()];
 	}
 	
 	public inline function getUnsafe(e:Entity):Dynamic
 	{
-		return storage[e];
+		return storage[e.id()];
 	}
 	
 	public function has(e:Entity):Bool
 	{
-		return storage[e] != null;
+		return storage[e.id()] != null;
 	}
 	
 	public function remove(e:Entity):Void

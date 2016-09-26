@@ -69,12 +69,12 @@ class ComponentManager
 	
 	public inline function create(entity:Entity):Void
 	{
-		flags[entity] = new BitFlag();
+		flags[entity.id()] = new BitFlag();
 	}
 	
 	public inline function flag(entity:Entity):BitFlag
 	{
-		return flags[entity];
+		return flags[entity.id()];
 	}
 	
 	public function set<T>(e:Entity, component:T):Void

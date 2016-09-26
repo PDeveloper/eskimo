@@ -27,7 +27,7 @@ class EntityManager
 	
 	public function create(components:Array<Dynamic> = null):Entity
 	{
-		var e = entityId++;
+		var e = new Entity(entityId++);
 		entities.push(e);
 		
 		this.components.create(e);
