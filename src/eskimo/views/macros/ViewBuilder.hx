@@ -1,4 +1,6 @@
 package eskimo.views.macros;
+import eskimo.ComponentManager;
+import eskimo.EntityManager;
 import eskimo.bits.BitFlag;
 import eskimo.filters.BitFilter;
 import haxe.macro.Context;
@@ -60,7 +62,6 @@ class ViewBuilder
 			var constructorExprs:Array<Expr> = [];
 			var initializorExprs:Array<Expr> = [];
 			var destructorExprs:Array<Expr> = [];
-			var typeParams:Array<TypeParamDecl> = [];
 			
 			constructorExprs.push(macro super(_entities, _filter));
 			
@@ -77,6 +78,7 @@ class ViewBuilder
 					default:
 						throw false;
 				}
+				
 				var fullType = typePack.concat([typeName]);
 				var typeString = fullType.join('.');
 				
@@ -95,8 +97,7 @@ class ViewBuilder
 				
 				var typeExpr = macro $i{pack[0]};
 				for (idx in 1...pack.length){
-					var field = pack[idx];
-					var field = $i{field};
+					var field = $i{pack[idx]};
 					typeExpr = macro $typeExpr.$field;
 				}
 				var module_i = $i{module};
@@ -188,6 +189,27 @@ class ViewBuilder
 					}),
 				});
 			}
+			
+			var entity_view_class = EntityViewBuilder.buildView(types);
+			var entity_view_create_expr:Expr = {expr: ENew({
+				pack: ['eskimo', 'views'],
+				name: 'EntityView',
+				params: [for (t in types) TPType(t.toComplexType())]
+			}, [macro _entities, macro entity]), pos: Context.currentPos() };
+			
+			fields.push({
+				pos: pos,
+				name: 'create',
+				access: [APublic, AInline],
+				kind: FFun({
+					args: [],
+					ret: macro : $entity_view_class,
+					expr: macro $b{[
+						(macro var entity = _entities.create()),
+						macro return $entity_view_create_expr
+					]}
+				}),
+			});
 			
 			initializorExprs.push(macro filter.update(_entities.components));
 			initializorExprs.push(macro for (entity in _entities.entities) check(entity));

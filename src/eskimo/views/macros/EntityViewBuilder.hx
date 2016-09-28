@@ -29,7 +29,7 @@ class EntityViewBuilder
         }
 	}
 	
-    static function buildView(types:Array<Type>):ComplexType {
+    static public function buildView(types:Array<Type>):ComplexType {
         var arity = types.length;
 		var types_strings = [];
 		
@@ -105,19 +105,6 @@ class EntityViewBuilder
 					ret: macro : eskimo.Entity,
 					expr: macro $b{[
 						macro return entity
-					]}
-				}),
-			});
-				
-			fields.push({
-				pos: pos,
-				name: 'create',
-				access: [APublic, AInline],
-				kind: FFun({
-					args: [],
-					ret: macro : Void,
-					expr: macro $b{[
-						macro entity = entities.create()
 					]}
 				}),
 			});
