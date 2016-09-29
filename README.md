@@ -1,12 +1,11 @@
-## eskimo
-Eskimo is an entity-component system written in haxe, focused on having a small codebase, and functionality over performance.
+## eskimo [0.2.x]
+Eskimo is an entity-component system written in haxe, focused on having a small codebase, and functionality over performance. While this is still mildly true, version 0.2.x has been focused on optimizing the framework, and restricting the api to always be fast.
 
 ##### Install
 * git `haxelib git eskimo https://github.com/PDeveloper/eskimo.git`
 * haxelib `haxelib install eskimo`
 
 ##### Features
-* Create and destroy `Entity` objects through an instance of the `Context` class.
 * Assign any class object as a component to an `Entity`.
 * Filter entities based on which components they have using a `View`.
 * Use an `EventView` to get lists of added, updated, or removed entities. Clear the events after processing with `.clear()`.
@@ -19,40 +18,39 @@ Eskimo is an entity-component system written in haxe, focused on having a small 
   * `.remove(entity, MyComponentClass):Void` - remove a component of an `Entity` by class.
   * `.has(entity, MyComponentClass):Bool` - check if an `Entity` has a component type.
   * `.clear(entity):Void` - remove all components of an `Entity`.
-* `EntityManager(ComponentManager)` - entity management.
+* `EntityManager(components:ComponentManager)` - entity management.
   * `.create(?[components]):Entity` - create an `Entity`.
   * `.destroy(entity):Void` - destroy an `Entity`.
   * `.clear():Void` - destroy all `Entity` objects.
 * `Entity`
-  * `.set(myComponent):Void` - set an object of any class to this `Entity`.
-  * `.get(MyComponentClass):MyComponentClass` - get a component of this `Entity` by class.
-  * `.remove(MyComponentClass):Void` - remove a component of this `Entity` by class.
-  * `.has(MyComponentClass):Bool` - check if this `Entity` has a component type.
-* `View<ComponentClass..>(entities)` - maintains a list of `Entity` objects corresponding to the `IncludeComponents` criteria.
+  * `.id():Int` - returns the raw id.
+* `View<ComponentClass..>(entities:EntityManager, ?filter:IFilter)` - maintains a list of `Entity` objects corresponding to the `IncludeComponents` criteria.
   * `.entities:Array<Entity>` - an array of entities currently meeting the criteria of this `View`.
   * `.dispose():Void` - destroy this `View` when no longer used.
-  * `.getComponentType(entity):ComponentType` - generated component getter.
-  * `.setComponentType(entity, componentType):Void` - generated component setter.
-* `EventView(dispatcher:EntityDispatcher, ?Filter)` - pass a `View` object to track entity changes. Optionally filter component updates.
+  * `.getComponentType(entity:Entity):ComponentType` - generated component getter.
+  * `.setComponentType(entity:Entity, componentType:ComponentType):Void` - generated component setter.
+* `EventView(dispatcher:EntityDispatcher, ?filter:IFilter)` - pass a `View` object to track entity changes. Optionally filter component updates.
   * `.added:Array<Entity>` - an array of added entities to this `View`.
   * `.updated:Array<Entity>` - an array of updated entities.
   * `.removed:Array<Entity>` - an array of removed entities.
   * `.clear():Void` - clears `added`/`updated`/`removed` arrays.
 * `IFilter` - filter objects to filter entities
-  * `Filter([IncludeComponents..], ?[ExcludeComponents], ?entities)` - basic filtering based on entity components.
-  * `CallbackFilter(callback:Entity->Bool, [IncludeComponents..], ?[ExcludeComponents], ?entities)` - like `Filter`, with an additional callback that gets called after passing component requirements.
-* `SystemManager(entities)` - system management and updating.
-  * `.add(system):Void` - adds a `System` to this manager.
-  * `.removes(system):Void` - removes a `System` to this manager.
+  * `Filter([IncludeComponents..], ?[ExcludeComponents], ?entities:EntityManager)` - basic filtering based on entity components.
+  * `CallbackFilter(callback:Entity->Bool, [IncludeComponents..], ?[ExcludeComponents], ?entities:EntityManager)` - like `Filter`, with an additional callback that gets called after passing component requirements.
+* `SystemManager(entities:EntityManager)` - system management and updating.
+  * `.add(system:System):Void` - adds a `System` to this manager.
+  * `.removes(system:System):Void` - removes a `System` to this manager.
   * `.has(SystemClass):Void` - check if this manager has a `System` type.
   * `.get(SystemClass):SystemClass` - get a `System` by class.
-  * `.update(delta):Void` - update all active `System` objects.
+  * `.update(delta:Float):Void` - update all active `System` objects.
 * `System(?[SystemDependencies..])` - base class for all systems, can require other `System` types from the manager before becoming active.
-  * `.onActivate(systems)` - override to handle `System` activation, with owning `SystemManager` as argument.
+  * `.onInitialize(systems:SystemManager)` - gets called when system is added to the SystemManager.
+  * `.onActivate(systems:SystemManager)` - gets called when system is activated to run by the SystemManager.
   * `.onUpdate(delta)` - override to handle `System` update, with delta time as argument.
-  * `.onDeactivate(systems)` - override to handle `System` deactivation, with owning `SystemManager` as argument.
+  * `.onDeactivate(systems:SystemManager)` - gets called when system is deactivated.
+  * `.onDispose(systems:SystemManager)` - gets called when system is removed.
 
-##### Usage
+##### Basic Usage
 ```haxe
 package ;
 import eskimo.ComponentManager;
@@ -78,20 +76,21 @@ class Main {
 		var components = new ComponentManager();
 		var entities = new EntityManager(components);
 		
-		var entity0 = entities.create();
-		var entity1 = entities.create();
-		
-		var component0a = new ComponentA('Entity 0 with Component A');
-		var component0b = new ComponentB(7);
-		entity0.set(component0a);
-		entity0.set(component0b);
-		
-		var component1b = new ComponentB(13);
-		entity1.set(component1b);
-		
 		var viewab = new View<ComponentA, ComponentB>(entities);
 		var eventsab = new EventView(viewab);
 		var viewb = new View<ComponentB>(entities);
+		
+		var component0a = new ComponentA('Entity 0 with Component A');
+		var component0b = new ComponentB(7);
+		
+		var entity0 = viewab.create();
+		entity0.setComponentA(component0a);
+		entity0.setComponentB(component0b);
+		
+		var component1b = new ComponentB(13);
+		
+		var entity1 = viewb.create();
+		entity1.set(component1b);
 		
 		trace('Entities added: ${eventsab.added.length}');
 		
@@ -108,8 +107,6 @@ class Main {
 	}
 }
 ```
-
-
 
 ##### License
 MIT as in free. Use it as you wish. Hopefully ethically and morally.
