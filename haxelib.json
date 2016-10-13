@@ -3,9 +3,9 @@
 	"url": "https://github.com/PDeveloper/eskimo",
 	"license": "MIT",
 	"tags": ["entity","component","system","ecs","cross"],
-	"description": "A modular and simple entity system.",
+	"description": "A fast and easy to use entity system.",
 	"version": "0.2.0",
-	"releasenote": "Revamped some parts of the Entity filtering API to expose faster component access methods.",
+	"releasenote": "Eskimo 0.2.0 has a whole new api and has been optimized over x100.",
 	"contributors": ["PDeveloper"],
 	"classPath" : "src"
 }
