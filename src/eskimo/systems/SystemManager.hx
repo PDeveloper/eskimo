@@ -61,12 +61,12 @@ class SystemManager
 		}
 	}
 	
-	public function has<T:System>(systemClass:Class<System>):Bool
+	public function has<T:System>(systemClass:Class<T>):Bool
 	{
 		return systems.exists(Type.getClassName(systemClass));
 	}
 	
-	public function get<T:System>(systemClass:Class<System>):T
+	public function get<T:System>(systemClass:Class<T>):T
 	{
 		return cast systems.get(Type.getClassName(systemClass));
 	}

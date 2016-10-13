@@ -29,7 +29,8 @@ class EntityViewBuilder
         }
 	}
 	
-    static public function buildView(types:Array<Type>):ComplexType {
+	static function createName(types:Array<Type>):String
+	{
         var arity = types.length;
 		var types_strings = [];
 		
@@ -51,9 +52,15 @@ class EntityViewBuilder
 			types_strings.push(fullType);
 		}
 		var types_string = types_strings.join('_');
-        var name = 'EntityView_$types_string';
+        return 'EntityView_$types_string';
+	}
+	
+    static public function buildView(types:Array<Type>):ComplexType {
+        var arity = types.length;
 		
-		if (!arityMap.exists(types_string)) {
+        var name = createName(types);
+		
+		if (!arityMap.exists(name)) {
 			var pos = Context.currentPos();
 			
 			var fields:Array<Field> = [];
@@ -263,7 +270,7 @@ class EntityViewBuilder
 				fields: fields
 			});
 			
-			arityMap[types_string] = true;
+			arityMap[name] = true;
 		}
 		
         return TPath({pack: [], name: name});

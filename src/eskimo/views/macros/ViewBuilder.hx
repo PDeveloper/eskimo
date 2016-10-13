@@ -57,7 +57,19 @@ class ViewBuilder
         return 'View_$types_string';
 	}
 	
-    static function buildView(types:Array<Type>):ComplexType {
+	static function buildTypeExpr(pack, module):Expr
+	{
+		var typeExpr = macro $i{pack[0]};
+		for (idx in 1...pack.length){
+			var field = $i{pack[idx]};
+			typeExpr = macro $typeExpr.$field;
+		}
+		var moduleExpr = $i{module};
+		return macro $typeExpr.$moduleExpr;
+	}
+	
+    static function buildView(types:Array<Type>):ComplexType
+	{
         var arity = types.length;
 		
         var name = createName(types);
@@ -102,13 +114,7 @@ class ViewBuilder
 				var pack = typePack;
 				var module = typeName;
 				
-				var typeExpr = macro $i{pack[0]};
-				for (idx in 1...pack.length){
-					var field = $i{pack[idx]};
-					typeExpr = macro $typeExpr.$field;
-				}
-				var module_i = $i{module};
-				typeExpr = macro $typeExpr.$module_i;
+				var typeExpr = buildTypeExpr(pack, module);
 				
 				initializorExprs.push(macro super.initialize(_entities));
 				initializorExprs.push(macro this.$fieldName = _entities.components.getContainer($typeExpr));
