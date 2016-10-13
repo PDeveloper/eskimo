@@ -31,7 +31,8 @@ class ViewBuilder
         }
 	}
 	
-    static function buildView(types:Array<Type>):ComplexType {
+	static function createName(types:Array<Type>):String
+	{
         var arity = types.length;
 		var types_strings = [];
 		
@@ -53,9 +54,15 @@ class ViewBuilder
 			types_strings.push(fullType);
 		}
 		var types_string = types_strings.join('_');
-        var name = 'View_$types_string';
+        return 'View_$types_string';
+	}
+	
+    static function buildView(types:Array<Type>):ComplexType {
+        var arity = types.length;
 		
-		if (!arityMap.exists(types_string)) {
+        var name = createName(types);
+		
+		if (!arityMap.exists(name)) {
 			var pos = Context.currentPos();
 			
 			var fields:Array<Field> = [];
@@ -250,7 +257,7 @@ class ViewBuilder
 			
 			Context.defineType({
 				pos: pos,
-				pack: [],
+				pack: ['eskimo', 'views'],
 				name: name,
 				meta: [],
 				kind: TDClass({
@@ -261,10 +268,10 @@ class ViewBuilder
 				fields: fields
 			});
 			
-			arityMap[types_string] = true;
+			arityMap[name] = true;
 		}
 		
-        return TPath({pack: [], name: name});
+        return TPath({pack: ['eskimo', 'views'], name: name});
 	}
 	
 }

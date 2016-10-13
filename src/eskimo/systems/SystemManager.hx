@@ -44,8 +44,6 @@ class SystemManager
 		system.__id = getSystemId(systemClassName);
 		systemFlag.setTrue(system.__id + 1);
 		
-		system.onInitialize(this);
-		
 		initializeDependencies(system);
 		evaluateSystems();
 	}
@@ -56,7 +54,7 @@ class SystemManager
 		
 		if (systems.remove(systemClassName))
 		{
-			system.onDispose(this);
+			if (system.isActive()) system.onStop(this);
 			
 			systemFlag.setFalse(system.__id + 1);
 			evaluateSystems();
@@ -111,7 +109,7 @@ class SystemManager
 				}
 				
 				system.__active = is_active;
-				system.onActivate(this);
+				system.onStart(this);
 				
 				isValid = false;
 			}
@@ -119,7 +117,7 @@ class SystemManager
 		else if (system.__active)
 		{
 			system.__active = false;
-			system.onDeactivate(this);
+			system.onStop(this);
 			
 			isValid = false;
 		}

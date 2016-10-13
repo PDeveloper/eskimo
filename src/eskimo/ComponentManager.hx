@@ -1,7 +1,7 @@
 package eskimo;
 import eskimo.containers.Container;
 import eskimo.bits.BitFlag;
-import eskimo.containers.Container.IContainerBase;
+import eskimo.containers.Container.IContainer;
 
 /**
  * ...
@@ -47,24 +47,24 @@ class ComponentManager
 {
 	
 	private var types:Map<String, IComponentType>;
-	private var containers:Array<IContainerBase>;
+	private var containers:Array<IContainer>;
 	
 	private var flags:Array<BitFlag>;
 	
-	public var onComponentSet:Entity->Dynamic->Void;
+	public var onComponentSet:Entity->IComponentType->Dynamic->Void;
 	
 	public function new():Void
 	{
 		types = new Map<String, IComponentType>();
-		containers = new Array<IContainerBase>();
+		containers = new Array<IContainer>();
 		
 		flags = new Array<BitFlag>();
 	}
 	
-	@:allow(eskimo.containers.IContainerBase)
-	private function _onComponentSet<T>(e:Entity, type:ComponentType<T>, component:T):Void
+	@:allow(eskimo.containers.IContainer)
+	private function onContainerComponentSet<T>(entity:Entity, type:ComponentType<T>, component:T):Void
 	{
-		if (onComponentSet != null) onComponentSet(e, component);
+		if (onComponentSet != null) onComponentSet(entity, type, component);
 	}
 	
 	public inline function create(entity:Entity):Void
@@ -77,38 +77,38 @@ class ComponentManager
 		return flags[entity.id()];
 	}
 	
-	public function set<T>(e:Entity, component:T):Void
+	public function set<T>(entity:Entity, component:T):Void
 	{
 		var container:Container<T> = getContainer(Type.getClass(component));
-		container.set(e, component);
+		container.set(entity, component);
 	}
 	
-	public function get<T>(e:Entity, componentClass:Class<T>):T
+	public function get<T>(entity:Entity, componentClass:Class<T>):T
 	{
 		var container:Container<T> = getContainer(componentClass);
-		return container.get(e);
+		return container.get(entity);
 	}
 	
-	public function getByType<T>(e:Entity, type:ComponentType<T>):T
+	public function getByType<T>(entity:Entity, type:ComponentType<T>):T
 	{
 		var container:Container<T> = getContainerByType(type);
-		return container.get(e);
+		return container.get(entity);
 	}
 	
-	public function remove<T>(e:Entity, componentClass:Class<T>):Void
+	public function remove<T>(entity:Entity, componentClass:Class<T>):Void
 	{
 		var container:Container<T> = getContainer(componentClass);
-		container.remove(e);
+		container.remove(entity);
 	}
 	
-	public function has<T>(e:Entity, componentClass:Class<T>):Bool
+	public function has<T>(entity:Entity, componentClass:Class<T>):Bool
 	{
-		return get(e, componentClass) != null;
+		return get(entity, componentClass) != null;
 	}
 	
-	public function clear(e:Entity):Void
+	public function clear(entity:Entity):Void
 	{
-		for (container in containers) container.remove(e);
+		for (container in containers) container.remove(entity);
 	}
 	
 	public inline function getContainer<T>(componentClass:Class<T>):Container<T>
@@ -122,22 +122,22 @@ class ComponentManager
 		return cast containers[type.id];
 	}
 	
-	public function getEntityComponents(e:Entity):Array<Dynamic>
+	public function getEntityComponents(entity:Entity):Array<Dynamic>
 	{
 		var components = new Array<Dynamic>();
 		for (container in containers)
 		{
-			if (container.has(e)) components.push(container.getUnsafe(e));
+			if (container.has(entity)) components.push(container.getUnsafe(entity));
 		}
 		
 		return components;
 	}
 	
-	public function getComponentClasses():Array<Class<Dynamic>>
+	public function getTypes():Array<IComponentType>
 	{
-		var classes = [];
-		for (type in types) classes.push(type.getClass());
-		return classes;
+		var _types = [];
+		for (type in types) _types.push(type);
+		return _types;
 	}
 	
 	public function getType<T>(componentClass:Class<T>):IComponentType

@@ -22,35 +22,38 @@ class EntityManager
 		this.components = components;
 		
 		entityId = 1;
-		entities = new Array<Entity>();
+		entities = [];
 	}
 	
 	public function create(components:Array<Dynamic> = null):Entity
 	{
-		var e = new Entity(entityId++);
-		entities.push(e);
+		var entity = new Entity(entityId++);
+		entities.push(entity);
 		
-		this.components.create(e);
+		this.components.create(entity);
+		if (components != null) for (component in components) this.components.set(entity, component);
 		
-		components = (components == null) ? [] : components;
-		for (component in components) this.components.set(e, component);
+		if (onCreate != null) onCreate(entity);
 		
-		if (onCreate != null) onCreate(e);
-		
-		return e;
+		return entity;
 	}
 	
-	public function destroy(e:Entity):Void
+	public function destroy(entity:Entity):Void
 	{
-		if (onDestroy != null) onDestroy(e);
+		if (onDestroy != null) onDestroy(entity);
 		
-		components.clear(e);
-		entities.remove(e);
+		components.clear(entity);
+		entities.remove(entity);
 	}
 	
 	public function clear():Void
 	{
-		while (entities.length > 0) destroy(entities[0]);
+		for (entity in entities)
+		{
+			if (onDestroy != null) onDestroy(entity);
+			components.clear(entity);
+		}
+		entities = [];
 	}
 	
 }

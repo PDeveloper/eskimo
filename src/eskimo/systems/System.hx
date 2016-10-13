@@ -30,15 +30,10 @@ class System
 		__active = false;
 		__id = -1;
 		__flag = new BitFlag();
-		__dependencies = dependencies != null? dependencies : [];
+		__dependencies = dependencies != null ? dependencies : [];
 	}
 	
-	public function onInitialize(systems:SystemManager):Void
-	{
-		
-	}
-	
-	public function onActivate(systems:SystemManager):Void
+	public function onStart(systems:SystemManager):Void
 	{
 		
 	}
@@ -48,12 +43,7 @@ class System
 		
 	}
 	
-	public function onDeactivate(systems:SystemManager):Void
-	{
-		
-	}
-	
-	public function onDispose(systems:SystemManager):Void
+	public function onStop(systems:SystemManager):Void
 	{
 		
 	}

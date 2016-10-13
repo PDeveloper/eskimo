@@ -109,6 +109,19 @@ class EntityViewBuilder
 				}),
 			});
 			
+			fields.push({
+				pos: pos,
+				name: 'destroy',
+				access: [APublic, AInline],
+				kind: FFun({
+					args: [],
+					ret: macro : Void,
+					expr: macro $b{[
+						macro entities.destroy(entity)
+					]}
+				}),
+			});
+			
 			for (i in 0...arity) {
 				var typePack = switch (types[i])
 				{
