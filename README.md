@@ -44,11 +44,9 @@ Eskimo is an entity-component system written in haxe, focused on having a small 
   * `.get(SystemClass):SystemClass` - get a `System` by class.
   * `.update(delta:Float):Void` - update all active `System` objects.
 * `System(?[SystemDependencies..])` - base class for all systems, can require other `System` types from the manager before becoming active.
-  * `.onInitialize(systems:SystemManager)` - gets called when system is added to the SystemManager.
-  * `.onActivate(systems:SystemManager)` - gets called when system is activated to run by the SystemManager.
+  * `.onStart(systems:SystemManager)` - gets called before system starts updating.
   * `.onUpdate(delta)` - override to handle `System` update, with delta time as argument.
-  * `.onDeactivate(systems:SystemManager)` - gets called when system is deactivated.
-  * `.onDispose(systems:SystemManager)` - gets called when system is removed.
+  * `.onStop(systems:SystemManager)` - gets called when system stops updating.
 
 ##### Basic Usage
 ```haxe
