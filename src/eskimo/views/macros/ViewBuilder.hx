@@ -57,15 +57,17 @@ class ViewBuilder
         return 'View_$types_string';
 	}
 	
-	static function buildTypeExpr(pack, module):Expr
+	static function buildTypeExpr(pack:Array<String>, module:String, name:String):Expr
 	{
-		var typeExpr = macro $i{pack[0]};
-		for (idx in 1...pack.length){
-			var field = $i{pack[idx]};
+		var packModule = pack.concat([module, name]);
+		
+		var typeExpr = macro $i{packModule[0]};
+		for (idx in 1...packModule.length){
+			var field = $i{packModule[idx]};
 			typeExpr = macro $typeExpr.$field;
 		}
-		var moduleExpr = $i{module};
-		return macro $typeExpr.$moduleExpr;
+		
+		return macro $typeExpr;
 	}
 	
     static function buildView(types:Array<Type>):ComplexType
@@ -85,20 +87,21 @@ class ViewBuilder
 			constructorExprs.push(macro super(_entities, _filter));
 			
 			for (i in 0...arity) {
-				var typePack = switch (types[i])
+				var typePack:Array<String>;
+				var typeModule:String;
+				var typeName:String;
+				
+				switch (types[i])
 				{
-					case TInst(ref, types): ref.get().pack;
-					default:
-						throw false;
-				}
-				var typeName = switch (types[i])
-				{
-					case TInst(ref, types): ref.get().name;
+					case TInst(ref, types):
+						typePack = ref.get().pack;
+						typeModule = ref.get().module.split('.').pop();
+						typeName = ref.get().name;
 					default:
 						throw false;
 				}
 				
-				var fullType = typePack.concat([typeName]);
+				var fullType = typePack.concat([typeModule, typeName]);
 				var typeString = fullType.join('.');
 				
 				var accessorName = typeName;
@@ -109,12 +112,8 @@ class ViewBuilder
 				var fieldName = '${containerName}Container';
 				var arrayName = '${containerName}Array';
 				
-				var ct = TPath({pack: typePack, name: typeName});
-				
-				var pack = typePack;
-				var module = typeName;
-				
-				var typeExpr = buildTypeExpr(pack, module);
+				var ct = TPath({pack: typePack, name: typeModule, sub: typeName});
+				var typeExpr = buildTypeExpr(typePack, typeModule, typeName);
 				
 				initializorExprs.push(macro super.initialize(_entities));
 				initializorExprs.push(macro this.$fieldName = _entities.components.getContainer($typeExpr));
