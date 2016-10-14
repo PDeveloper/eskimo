@@ -127,7 +127,7 @@ class ViewBuilder
 				fields.push({
 					pos: pos,
 					name: fieldName,
-					access: [APrivate],
+					access: [APublic],
 					kind: FVar(TPath({
 							pack: ['eskimo', 'containers'],
 							name: 'Container',
@@ -138,7 +138,7 @@ class ViewBuilder
 				fields.push({
 					pos: pos,
 					name: arrayName,
-					access: [APrivate],
+					access: [APublic],
 					kind: FVar(TPath({
 							pack: [],
 							name: 'Array',
@@ -197,7 +197,7 @@ class ViewBuilder
 								{name: '$camelTypeName', type: macro : $ct }],
 						ret: macro : Void,
 						expr: macro $b{[
-							macro return this.$fieldName.set(entity, $i{camelTypeName})
+							macro this.$fieldName.set(entity, $i{camelTypeName})
 						]}
 					}),
 				});

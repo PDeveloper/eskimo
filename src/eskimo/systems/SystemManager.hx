@@ -54,7 +54,7 @@ class SystemManager
 		
 		if (systems.remove(systemClassName))
 		{
-			if (system.isActive()) system.onStop(this);
+			if (system.__active) system.onStop(this);
 			
 			systemFlag.setFalse(system.__id + 1);
 			evaluateSystems();
@@ -96,6 +96,7 @@ class SystemManager
 	private inline function evaluateDependencies(system:System):Bool
 	{
 		var isValid = true;
+		
 		if (systemFlag.contains(system.__flag))
 		{
 			if (!system.__active)
@@ -109,7 +110,7 @@ class SystemManager
 				}
 				
 				system.__active = is_active;
-				system.onStart(this);
+				if (system.__active) system.onStart(this);
 				
 				isValid = false;
 			}

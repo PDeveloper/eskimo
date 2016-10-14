@@ -35,7 +35,7 @@ class Container<T> implements IContainer
 		listeners = new Array<IContainerListener>();
 	}
 	
-	private inline function _set(entity:Entity, component:T):Void
+	private inline function _set(entity:Entity, component:T):T
 	{
 		if (component != null) components.flag(entity).add(type.flag);
 		else components.flag(entity).sub(type.flag);
@@ -44,11 +44,13 @@ class Container<T> implements IContainer
 		
 		components.onContainerComponentSet(entity, type, component);
 		for (listener in listeners) listener.update(entity, type);
+		
+		return component;
 	}
 	
-	public inline function set(entity:Entity, component:T):Void
+	public inline function set(entity:Entity, component:T):T
 	{
-		_set(entity, component);
+		return _set(entity, component);
 	}
 	
 	public inline function get(entity:Entity):T
