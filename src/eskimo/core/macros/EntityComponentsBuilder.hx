@@ -1,6 +1,4 @@
-package eskimo.views.macros;
-import eskimo.bits.BitFlag;
-import eskimo.filters.BitFilter;
+package eskimo.core.macros;
 import eskimo.macros.TypeTools;
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -49,7 +47,7 @@ class EntityComponentsBuilder
 			];
 			
 			var factoryType = TPath({
-				pack: ['eskimo', 'views'],
+				pack: ['eskimo', 'core'],
 				name: 'Factory',
 				params: [for (t in types) TPType(t.toComplexType())]
 			});
@@ -119,29 +117,15 @@ class EntityComponentsBuilder
 				fields.push(setterField);
 			}
 			
-			fields.push({
-				pos: pos,
-				name: "new",
-				access: [APublic, AInline],
-				kind: FFun({
-					args: [
-						{ name: 'factory', type: factoryType },
-						{
-							name: 'entity', type: TPath({
-							pack: ['eskimo'],
-							name: 'Entity'}),
-							opt: true,
-							value: macro null
-						}
-					],
-					ret: macro : Void,
-					expr: macro $b{constructorExprs}
-				})
-			});
+			fields.push(TypeTools.buildFunction('new', [APublic, AInline], [
+					{ name: 'factory', type: factoryType },
+					{ name: 'entity', type: entityType, opt: true, value: macro null }
+				], macro : Void,
+				constructorExprs));
 			
 			Context.defineType({
 				pos: pos,
-				pack: [],
+				pack: ['eskimo', 'core'],
 				name: name,
 				meta: [],
 				kind: TDClass(),
@@ -151,7 +135,7 @@ class EntityComponentsBuilder
 			arityMap[name] = true;
 		}
 		
-        return TPath({pack: [], name: name});
+        return TPath({pack: ['eskimo', 'core'], name: name});
 	}
 	
 }

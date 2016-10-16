@@ -1,5 +1,4 @@
-package eskimo.views.macros;
-import eskimo.events.EntityDispatcher;
+package eskimo.core.macros;
 import eskimo.macros.TypeTools;
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -146,7 +145,7 @@ class ViewBuilder
 				[updateExprs]));
 				
 			var viewIteratorDef = {
-				pack: ['eskimo', 'views'],
+				pack: ['eskimo', 'core'],
 				name: ViewIteratorBuilder.type_name,
 				params: [for (t in types) TPType(t.toComplexType())]
 			};
@@ -159,11 +158,11 @@ class ViewBuilder
 			
 			Context.defineType({
 				pos: pos,
-				pack: ['eskimo', 'views'],
+				pack: ['eskimo', 'core'],
 				name: name,
 				meta: [],
 				kind: TDClass({
-					pack: ['eskimo', 'views'],
+					pack: ['eskimo', 'core'],
 					name: FactoryBuilder.type_name,
 					params: [for (t in types) TPType(t.toComplexType())]
 				},
@@ -177,7 +176,7 @@ class ViewBuilder
 			arityMap[name] = true;
 		}
 		
-        return TPath({pack: ['eskimo', 'views'], name: name});
+        return TPath({pack: ['eskimo', 'core'], name: name});
 	}
 	
 }

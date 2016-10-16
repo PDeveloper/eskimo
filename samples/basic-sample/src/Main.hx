@@ -3,8 +3,8 @@ import eskimo.ComponentManager;
 import eskimo.Entity;
 import eskimo.EntityManager;
 import eskimo.events.ViewEvents;
-import eskimo.views.Factory;
-import eskimo.views.View;
+import eskimo.core.Factory;
+import eskimo.core.View;
 import haxe.Json;
 
 import Components;

@@ -105,4 +105,10 @@ class TypeTools
 		return data;
 	}
 	
+	static public function subclasses(type:ClassType, root:String):Bool
+	{
+		var name = type.module + '.' + type.name;
+		return (name.substr(0, root.length) == root || type.superClass != null && subclasses(type.superClass.t.get(), root));
+	}
+	
 }

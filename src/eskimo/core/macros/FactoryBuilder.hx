@@ -1,8 +1,4 @@
-package eskimo.views.macros;
-import eskimo.ComponentManager;
-import eskimo.EntityManager;
-import eskimo.bits.BitFlag;
-import eskimo.filters.BitFilter;
+package eskimo.core.macros;
 import eskimo.macros.TypeTools;
 import haxe.macro.Context;
 import haxe.macro.Expr;
@@ -114,22 +110,19 @@ class FactoryBuilder
 				));
 			}
 			
-			var entityComponentsType = TPath({
-				pack: ['eskimo', 'views'],
+			var entityComponentsDef = {
+				pack: ['eskimo', 'core'],
 				name: 'EntityComponents',
 				params: [for (t in types) TPType(t.toComplexType())]
-			});
+			};
+			var entityComponentsType = TPath(entityComponentsDef);
 			
-			var entity_components_create_expr:Expr = {expr: ENew({
-				pack: ['eskimo', 'views'],
-				name: 'EntityComponents',
-				params: [for (t in types) TPType(t.toComplexType())]
-			}, [macro this, macro entity]), pos: Context.currentPos() };
+			var entity_components_create_expr:Expr = {expr: ENew(entityComponentsDef, [macro this, macro entity]), pos: Context.currentPos() };
 			
 			var entityArgOpt = { name: 'entity', type: entityType, opt: true };
 			
 			fields.push(TypeTools.buildFunction(
-				'create', [APublic, AInline], [entityArgOpt],
+				'create', [APublic], [entityArgOpt],
 				macro : $entityComponentsType,
 				[
 					(macro if (entity == null) entity = manager.create()),
@@ -151,7 +144,7 @@ class FactoryBuilder
 			
 			Context.defineType({
 				pos: pos,
-				pack: ['eskimo', 'views'],
+				pack: ['eskimo', 'core'],
 				name: name,
 				meta: [],
 				kind: TDClass(),
@@ -161,7 +154,7 @@ class FactoryBuilder
 			arityMap[name] = true;
 		}
 		
-        return TPath({pack: ['eskimo', 'views'], name: name});
+        return TPath({pack: ['eskimo', 'core'], name: name});
 	}
 	
 }
