@@ -16,7 +16,7 @@ class SystemB extends System
 		super([SystemA]);
 	}
 	
-	override public function onActivate(systems:SystemManager):Void 
+	override public function onStart(systems:SystemManager):Void 
 	{
 		trace('SystemB is being added.');
 		systemA = systems.get(SystemA);
@@ -30,7 +30,7 @@ class SystemB extends System
 		work();
 	}
 	
-	override public function onDeactivate(systems:SystemManager):Void 
+	override public function onStop(systems:SystemManager):Void 
 	{
 		trace('SystemB is being removed.');
 	}

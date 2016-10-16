@@ -6,6 +6,7 @@ import eskimo.systems.SystemManager;
  * ...
  * @author ...
  */
+
 class SystemA extends System
 {
 	
@@ -14,7 +15,7 @@ class SystemA extends System
 		super();
 	}
 	
-	override public function onActivate(systems:SystemManager):Void 
+	override public function onStart(systems:SystemManager):Void 
 	{
 		trace('SystemA is being added.');
 	}
@@ -25,7 +26,7 @@ class SystemA extends System
 		work();
 	}
 	
-	override public function onDeactivate(systems:SystemManager):Void 
+	override public function onStop(systems:SystemManager):Void 
 	{
 		trace('SystemA is being removed.');
 	}

@@ -1,8 +1,9 @@
 package;
-import eskimo.Context;
+import eskimo.ComponentManager;
 import eskimo.Entity;
-import eskimo.views.BufferView;
+import eskimo.EntityManager;
 import eskimo.events.ViewEvents;
+import eskimo.views.Factory;
 import eskimo.views.View;
 import haxe.Json;
 
@@ -18,12 +19,20 @@ using Lambda;
 class Main 
 {
 	
+	static var factoryabc = new Factory<ComponentA, ComponentB, ComponentC>();
+	
+	static var viewab = new View<ComponentA, ComponentB>();
+	static var viewb = new View<ComponentB>();
+	
 	static function main():Void
 	{
-		var context = new Context();
+		var components = new ComponentManager();
+		var entities = new EntityManager(components);
 		
-		var e0 = context.entities.create();
-		var e1 = context.entities.create();
+		factoryabc.initialize(entities);
+		
+		var e0 = factoryabc.create();
+		var e1 = factoryabc.create();
 		
 		var c0a = new ComponentA('Entity 0 :: Component A');
 		var c0b = new ComponentB(7);
@@ -31,35 +40,31 @@ class Main
 		var c1b = new ComponentB(13);
 		var c1c = new ComponentC( { name: 'Entity 1', value: 1 } );
 		
-		context.components.set(e0, c0a);
-		context.components.set(e0, c0b);
+		e0.componentA = c0a;
+		e0.componentB = c0b;
 		
-		context.components.set(e1, c1b);
-		context.components.set(e1, c1c);
+		e1.componentB = c1b;
+		e1.componentC = c1c;
 		
-		if (context.components.get(e0, ComponentA).string == 'Entity 0 :: Component A' &&
-			context.components.get(e0, ComponentB).int == 7 &&
-			context.components.get(e1, ComponentB).int == 13 &&
-			Json.stringify(context.components.get(e1, ComponentC).object) == Json.stringify( { name: 'Entity 1', value: 1 } ))
+		if (factoryabc.getComponentA(e0.get()).string == 'Entity 0 :: Component A' &&
+			factoryabc.getComponentB(e0.get()).int == 7 &&
+			factoryabc.getComponentB(e1.get()).int == 13 &&
+			Json.stringify(factoryabc.getComponentC(e1.get()).object) == Json.stringify( { name: 'Entity 1', value: 1 } ))
 		{
 			trace('Test 1 Succeeded :: Correct component storage');
 		}
 		else
 		{
 			trace('Test 1 Failed:');
-			trace('Entity 0 / Component A: ${context.components.get(e0, ComponentA).string}');
-			trace('Entity 0 / Component B: ${context.components.get(e0, ComponentB).int}');
-			trace('Entity 1 / Component B: ${context.components.get(e1, ComponentB).int}');
-			trace('Entity 1 / Component C: ${context.components.get(e1, ComponentC).object}');
+			trace('Entity 0 / Component A: ${components.get(e0.get(), ComponentA).string}');
+			trace('Entity 0 / Component B: ${components.get(e0.get(), ComponentB).int}');
+			trace('Entity 1 / Component B: ${components.get(e1.get(), ComponentB).int}');
+			trace('Entity 1 / Component C: ${components.get(e1.get(), ComponentC).object}');
 		}
 		
-		var viewab = new View([ComponentA, ComponentB], context);
-		var viewb = new View([ComponentB], context);
-		
-		viewab.onAdd = function (entity:Entity):Void
-		{
-			trace('${entity.id} was added to viewab');
-		}
+		var eventviewab = new ViewEvents(viewab.dispatcher);
+		viewab.initialize(entities);
+		viewb.initialize(entities);
 		
 		if (viewab.entities.length == 1 &&
 			viewb.entities.length == 2)
@@ -74,7 +79,7 @@ class Main
 		}
 		
 		var c1a = new ComponentA('Entity 1 :: Component A');
-		e1.set(c1a);
+		e1.componentA = c1a;
 		
 		if (viewab.entities.length == 2 &&
 			viewb.entities.length == 2)
@@ -88,8 +93,6 @@ class Main
 			trace('B Entities: ${viewb.entities.length}');
 		}
 		
-		var eventviewab = new ViewEvents([ComponentA, ComponentB], context);
-		
 		if (eventviewab.added.length == 2)
 		{
 			trace('Test 4 Succeeded :: EventView picks up added entities');
@@ -100,7 +103,7 @@ class Main
 			trace('Added: ${eventviewab.added.length}');
 		}
 		
-		e1.remove(ComponentA);
+		e1.componentA = null;
 		
 		if (eventviewab.removed.length == 1)
 		{
@@ -126,30 +129,6 @@ class Main
 			trace('Added: ${eventviewab.added.length}');
 			trace('Updated: ${eventviewab.updated.length}');
 			trace('Removed: ${eventviewab.removed.length}');
-		}
-		
-		var bufferviewa = new BufferView([ComponentA], context);
-		
-		var c0a2 = new ComponentA('Entity 0 :: Component A 2');
-		
-		e0.set(c0a2);
-		
-		var c0a_current_value = e0.get(ComponentA).string;
-		var c0a_previous_value = bufferviewa.previous(e0, ComponentA).string;
-		bufferviewa.buffer();
-		var c0a_buffered_value = bufferviewa.previous(e0, ComponentA).string;
-		
-		if (c0a_previous_value == c0a.string &&
-			c0a_current_value == c0a_buffered_value)
-		{
-			trace('Test 7 Succeeded :: BufferView buffers previous entity components');
-		}
-		else
-		{
-			trace('Test 7 Failed:');
-			trace('Current Value: $c0a_current_value');
-			trace('Previous Value: $c0a_previous_value');
-			trace('Buffered Value (should match Current Value): $c0a_buffered_value');
 		}
 	}
 	
