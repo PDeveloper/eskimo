@@ -1,4 +1,4 @@
-package eskimo.views;
+package eskimo.events;
 import eskimo.ComponentManager;
 import eskimo.Entity;
 import eskimo.filters.BitFilter;

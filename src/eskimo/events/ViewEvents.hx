@@ -1,8 +1,9 @@
-package eskimo.views;
+package eskimo.events;
 import eskimo.ComponentManager;
 import eskimo.ComponentManager.IComponentType;
 import eskimo.Entity;
 import eskimo.containers.EntityArray;
+import eskimo.events.IEntityDispatcher;
 import eskimo.filters.BitFilter;
 import eskimo.filters.IFilter;
 
@@ -11,7 +12,7 @@ import eskimo.filters.IFilter;
  * @author PDeveloper
  */
 
-class EventView implements IEntityListener
+class ViewEvents implements IEntityListener
 {
 	
 	public var parent:IEntityDispatcher;

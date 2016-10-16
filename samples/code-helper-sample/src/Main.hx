@@ -2,7 +2,7 @@ package;
 import eskimo.views.BufferView;
 import eskimo.Context;
 import eskimo.Entity;
-import eskimo.views.EventView;
+import eskimo.events.ViewEvents;
 import eskimo.views.View;
 import eskimo.filters.BitFilter;
 import eskimo.filters.NoFilter;

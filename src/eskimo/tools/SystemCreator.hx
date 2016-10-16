@@ -1,7 +1,7 @@
 package eskimo.tools;
 import eskimo.Entity;
 import eskimo.EntityManager;
-import eskimo.views.EventView;
+import eskimo.events.ViewEvents;
 import eskimo.filters.IFilter;
 
 /**
@@ -12,24 +12,24 @@ import eskimo.filters.IFilter;
 class SystemCreator
 {
 	
-	private var _views:Map<String, EventView>;
+	private var _views:Map<String, ViewEvents>;
 	
 	public var entities:EntityManager;
 	
 	public function new(entities:EntityManager):Void
 	{
 		this.entities = entities;
-		_views = new Map<String, EventView>();
+		_views = new Map<String, ViewEvents>();
 	}
 	
-	private inline function getViewFor(filter:IFilter):EventView
+	private inline function getViewFor(filter:IFilter):ViewEvents
 	{
 		var string_id = filter.toString();
 		if (_views.exists(string_id)) return _views.get(string_id);
 		
 		filter.update(context);
 		
-		var view = new EventView(filter.getIncludes(), filter.getExcludes(), entities);
+		var view = new ViewEvents(filter.getIncludes(), filter.getExcludes(), entities);
 		_views.set(string_id, view);
 		
 		return view;

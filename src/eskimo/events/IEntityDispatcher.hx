@@ -1,4 +1,5 @@
-package eskimo.views;
+package eskimo.events;
+import eskimo.events.IEntityListener;
 
 /**
  * @author PDeveloper

@@ -1,4 +1,4 @@
-package eskimo.views;
+package eskimo.events;
 import eskimo.ComponentManager.IComponentType;
 import eskimo.Entity;
 

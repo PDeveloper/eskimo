@@ -1,8 +1,6 @@
 package eskimo.views.macros;
-import eskimo.ComponentManager;
-import eskimo.EntityManager;
-import eskimo.bits.BitFlag;
-import eskimo.filters.BitFilter;
+import eskimo.events.EntityDispatcher;
+import eskimo.macros.TypeTools;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.ExprTools;
@@ -18,63 +16,28 @@ using haxe.macro.Tools;
 
 class ViewBuilder
 {
+	
+	public static var type_name = "View";
+	
     static var arityMap = new Map<String, Bool>();
 	
     static function build():ComplexType
 	{
         return switch (Context.getLocalType())
 		{
-            case TInst(_.get() => {name: "View"}, types):
-                buildView(types);
+            case TInst(_.get() => {name: type_name}, types):
+                buildType(types);
             default:
                 throw false;
         }
 	}
 	
-	static function createName(types:Array<Type>):String
-	{
-        var arity = types.length;
-		var types_strings = [];
-		
-		for (i in 0...arity) {
-			var typePack = switch (types[i])
-			{
-				case TInst(ref, types): ref.get().pack;
-				default:
-					throw false;
-			}
-			var typeName = switch (types[i])
-			{
-				case TInst(ref, types): ref.get().name;
-				default:
-					throw false;
-			}
-			typePack.push(typeName);
-			var fullType = typePack.join('_');
-			types_strings.push(fullType);
-		}
-		var types_string = types_strings.join('_');
-        return 'View_$types_string';
-	}
-	
-	static function buildTypeExpr(pack:Array<String>, module:String, name:String):Expr
-	{
-		var packModule = pack.concat([module, name]);
-		
-		var typeExpr = macro $i{packModule[0]};
-		for (idx in 1...packModule.length){
-			var field = $i{packModule[idx]};
-			typeExpr = macro $typeExpr.$field;
-		}
-		
-		return macro $typeExpr;
-	}
-	
-    static function buildView(types:Array<Type>):ComplexType
+    static function buildType(types:Array<Type>):ComplexType
 	{
         var arity = types.length;
 		
-        var name = createName(types);
+		var types_string = TypeTools.createString(types);
+        var name = '${type_name}_${types_string}';
 		
 		if (!arityMap.exists(name)) {
 			var pos = Context.currentPos();
@@ -84,181 +47,115 @@ class ViewBuilder
 			var initializorExprs:Array<Expr> = [];
 			var destructorExprs:Array<Expr> = [];
 			
-			constructorExprs.push(macro super(_entities, _filter));
+			var entityType = macro : eskimo.Entity;
+			var entityManagerType = macro : eskimo.EntityManager;
+			
+			var entityArrayType = macro : eskimo.containers.EntityArray;
+			var entityArrayArrayType = macro : Array<Entity>;
+			var iFilterType = macro : eskimo.filters.IFilter;
+			var entityDispatcherType = macro : eskimo.events.EntityDispatcher;
+			
+			var entityArrayName = 'entities_array';
+			fields.push(TypeTools.buildVar(entityArrayName, [APrivate], entityArrayType));
+			
+			var entityArrayArrayName = 'entities';
+			fields.push(TypeTools.buildVar(entityArrayArrayName, [APublic], entityArrayArrayType));
+			
+			var filterName = 'filter';
+			fields.push(TypeTools.buildVar(filterName, [APublic], iFilterType));
+			
+			var dispatcherName = 'dispatcher';
+			fields.push(TypeTools.buildVar(dispatcherName, [APublic], entityDispatcherType));
+			
+			constructorExprs.push(macro $b{[
+				macro this.dispatcher = new eskimo.events.EntityDispatcher(),
+				
+				macro this.entities_array = new eskimo.containers.EntityArray(),
+				macro this.entities = entities_array.entities,
+				macro this.filter = filter != null ? filter : new eskimo.filters.BitFilter([]),
+				
+				macro super(manager)
+			]});
+			initializorExprs.push(macro super.initialize(manager));
 			
 			for (i in 0...arity) {
-				var typePack:Array<String>;
-				var typeModule:String;
-				var typeName:String;
+				var info = TypeTools.getPathInfo(types[i]);
+				var componentType = TPath({pack: info.pack, name: info.module, sub: info.name});
+				var classExpr = TypeTools.buildTypeExpr(info.pack, info.module, info.name);
 				
-				switch (types[i])
-				{
-					case TInst(ref, types):
-						typePack = ref.get().pack;
-						typeModule = ref.get().module.split('.').pop();
-						typeName = ref.get().name;
-					default:
-						throw false;
-				}
+				var accessorName = (info.name.substr( -9) == 'Component') ? info.name.substr(0, -9) : info.name;
+				var camelName = TypeTools.camelCase(accessorName);
 				
-				var fullType = typePack.concat([typeModule, typeName]);
-				var typeString = fullType.join('.');
+				var containerName = '${camelName}Container';
 				
-				var accessorName = typeName;
-				if (accessorName.substr( -9) == 'Component') accessorName = accessorName.substr(0, accessorName.length - 9);
-				
-				var containerName = accessorName.substr(0, 1).toLowerCase() + accessorName.substr(1);
-				
-				var fieldName = '${containerName}Container';
-				var arrayName = '${containerName}Array';
-				
-				var ct = TPath({pack: typePack, name: typeModule, sub: typeName});
-				var typeExpr = buildTypeExpr(typePack, typeModule, typeName);
-				
-				initializorExprs.push(macro super.initialize(_entities));
-				initializorExprs.push(macro this.$fieldName = _entities.components.getContainer($typeExpr));
-				initializorExprs.push(macro this.$arrayName = this.$fieldName.storage);
-				initializorExprs.push(macro this.$fieldName.listen(this));
-				destructorExprs.push(macro this.$fieldName.unlisten(this));
-				initializorExprs.push(macro filter.include($typeExpr));
-				
-				var meta:Metadata = [];
-				fields.push({
-					pos: pos,
-					name: fieldName,
-					access: [APublic],
-					kind: FVar(TPath({
-							pack: ['eskimo', 'containers'],
-							name: 'Container',
-							params: [TPType(macro : $ct)]
-					})),
-					meta: meta,
-				});
-				fields.push({
-					pos: pos,
-					name: arrayName,
-					access: [APublic],
-					kind: FVar(TPath({
-							pack: [],
-							name: 'Array',
-							params: [TPType(macro : $ct)]
-					})),
-					meta: meta,
-				});
-				
-				fields.push({
-					pos: pos,
-					name: 'get$accessorName',
-					access: [APublic, AInline],
-					kind: FFun({
-						args: [{name: 'entity', type: TPath({pack: ['eskimo'], name: 'Entity'})}],
-						ret: macro : $ct,
-						expr: macro $b{[
-							macro return this.$arrayName[entity.id()]
-						]}
-					}),
-				});
-				
-				fields.push({
-					pos: pos,
-					name: 'has$accessorName',
-					access: [APublic, AInline],
-					kind: FFun({
-						args: [{name: 'entity', type: TPath({pack: ['eskimo'], name: 'Entity'})}],
-						ret: macro : Bool,
-						expr: macro $b{[
-							macro return this.$arrayName[entity.id()] != null
-						]}
-					}),
-				});
-				
-				fields.push({
-					pos: pos,
-					name: 'remove$accessorName',
-					access: [APublic, AInline],
-					kind: FFun({
-						args: [{name: 'entity', type: TPath({pack: ['eskimo'], name: 'Entity'})}],
-						ret: macro : Void,
-						expr: macro $b{[
-							macro this.$fieldName.set(entity, null)
-						]}
-					}),
-				});
-				
-				var camelTypeName = typeName.substr(0, 1).toLowerCase() + typeName.substr(1);
-				
-				fields.push({
-					pos: pos,
-					name: 'set$accessorName',
-					access: [APublic, AInline],
-					kind: FFun({
-						args: [{name: 'entity', type: TPath({pack: ['eskimo'], name: 'Entity'})},
-								{name: '$camelTypeName', type: macro : $ct }],
-						ret: macro : Void,
-						expr: macro $b{[
-							macro this.$fieldName.set(entity, $i{camelTypeName})
-						]}
-					}),
-				});
+				initializorExprs.push(macro $b{[
+					macro this.$containerName.listen(this),
+					macro filter.include($classExpr)
+				]});
+				destructorExprs.push(macro this.$containerName.unlisten(this));
 			}
 			
-			var entity_view_class = EntityViewBuilder.buildView(types);
-			var entity_view_create_expr:Expr = {expr: ENew({
+			initializorExprs.push(macro filter.update(manager.components));
+			initializorExprs.push(macro for (entity in manager.entities) check(entity));
+			
+			fields.push(TypeTools.buildFunction('new', [APublic, AInline],
+				[{name: 'manager', type: entityManagerType, opt: true},
+				{name: 'filter', type: iFilterType, opt: true}],
+				macro : Void,
+				constructorExprs)
+			);
+			
+			fields.push(TypeTools.buildFunction('initialize', [AOverride, APublic],
+				[{name: 'manager', type: entityManagerType}],
+				macro : Void,
+				initializorExprs)
+			);
+			
+			fields.push(TypeTools.buildFunction('dispose', [APublic], [], macro : Void, destructorExprs));
+			
+			var checkExpr = macro {
+				if (filter.contains(entity))
+				{
+					if (!entities_array.has(entity))
+					{
+						entities_array.push(entity);
+						for (listener in dispatcher.listeners) listener.onAdd(entity);
+					}
+					else for (listener in dispatcher.listeners) listener.onUpdate(entity, type);
+				}
+				else if (entities_array.has(entity))
+				{
+					entities_array.remove(entity);
+					for (listener in dispatcher.listeners) listener.onRemove(entity);
+				}
+			};
+			var updateExprs = macro check(entity, type);
+			
+			var iComponentTypeType = macro : eskimo.ComponentManager.IComponentType;
+			
+			fields.push(TypeTools.buildFunction('check', [APrivate],
+				[{name: 'entity', type: entityType},
+				{name: 'type', type: iComponentTypeType, opt: true}],
+				macro : Void,
+				[checkExpr]));
+			
+			fields.push(TypeTools.buildFunction('update', [APublic],
+				[{name: 'entity', type: entityType},
+				{name: 'type', type: iComponentTypeType}],
+				macro : Void,
+				[updateExprs]));
+				
+			var viewIteratorDef = {
 				pack: ['eskimo', 'views'],
-				name: 'EntityView',
+				name: ViewIteratorBuilder.type_name,
 				params: [for (t in types) TPType(t.toComplexType())]
-			}, [macro _entities, macro entity]), pos: Context.currentPos() };
+			};
+			var viewIteratorType = TPath(viewIteratorDef);
+			var viewIteratorNewExpr:Expr = {expr: ENew(viewIteratorDef, [macro this]), pos: Context.currentPos() };
 			
-			fields.push({
-				pos: pos,
-				name: 'create',
-				access: [APublic, AInline],
-				kind: FFun({
-					args: [],
-					ret: macro : $entity_view_class,
-					expr: macro $b{[
-						(macro var entity = _entities.create()),
-						macro return $entity_view_create_expr
-					]}
-				}),
-			});
-			
-			initializorExprs.push(macro filter.update(_entities.components));
-			initializorExprs.push(macro for (entity in _entities.entities) check(entity));
-			
-			fields.push({
-				pos: pos,
-				name: "new",
-				access: [APublic, AInline],
-				kind: FFun({
-					args: [	{name: '_entities', type: TPath({pack: ['eskimo'], name: 'EntityManager'}), opt: true},
-							{name: '_filter', type: TPath({pack: ['eskimo', 'filters'], name: 'IFilter'}), opt: true}],
-					ret: macro : Void,
-					expr: macro $b{constructorExprs}
-				})
-			});
-			
-			fields.push({
-				pos: pos,
-				name: "initialize",
-				access: [AOverride, APublic],
-				kind: FFun({
-					args: [	{name: '_entities', type: TPath({pack: ['eskimo'], name: 'EntityManager'})}],
-					ret: macro : Void,
-					expr: macro $b{initializorExprs}
-				})
-			});
-			
-			fields.push({
-				pos: pos,
-				name: "dispose",
-				access: [AOverride, APublic],
-				kind: FFun({
-					args: [],
-					ret: macro : Void,
-					expr: macro $b{destructorExprs}
-				})
-			});
+			fields.push(TypeTools.buildFunction('iterator', [APublic, AInline], [],
+				viewIteratorType,
+				[macro return $viewIteratorNewExpr]));
 			
 			Context.defineType({
 				pos: pos,
@@ -267,9 +164,13 @@ class ViewBuilder
 				meta: [],
 				kind: TDClass({
 					pack: ['eskimo', 'views'],
-					name: 'View',
-					sub: 'ViewBase'
-				}),
+					name: FactoryBuilder.type_name,
+					params: [for (t in types) TPType(t.toComplexType())]
+				},
+				[{
+					pack: ['eskimo', 'containers'],
+					name: 'IContainerListener'
+				}]),
 				fields: fields
 			});
 			

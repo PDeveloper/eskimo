@@ -2,7 +2,7 @@ package;
 import eskimo.Context;
 import eskimo.Entity;
 import eskimo.views.BufferView;
-import eskimo.views.EventView;
+import eskimo.events.ViewEvents;
 import eskimo.views.View;
 import haxe.Json;
 
@@ -88,7 +88,7 @@ class Main
 			trace('B Entities: ${viewb.entities.length}');
 		}
 		
-		var eventviewab = new EventView([ComponentA, ComponentB], context);
+		var eventviewab = new ViewEvents([ComponentA, ComponentB], context);
 		
 		if (eventviewab.added.length == 2)
 		{

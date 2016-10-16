@@ -4,7 +4,7 @@ import eskimo.Entity;
 import eskimo.EntityManager;
 import eskimo.systems.SystemManager;
 import eskimo.views.BufferView;
-import eskimo.views.EventView;
+import eskimo.events.ViewEvents;
 import eskimo.views.View;
 import haxe.Json;
 
@@ -93,7 +93,7 @@ class Main
 			trace('B Entities: ${viewb.entities.length}');
 		}
 		
-		var eventviewab = new EventView([ComponentA, ComponentB], entities);
+		var eventviewab = new ViewEvents([ComponentA, ComponentB], entities);
 		
 		if (eventviewab.added.length == 2)
 		{
