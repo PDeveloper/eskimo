@@ -78,7 +78,7 @@ class ViewIteratorBuilder
 			
 			var hasNextExpr = [macro return index < view.entities.length];
 			var nextExpr = macro {
-				var entity = view.entities[index++];
+				var entity = view.entities.get(index++);
 				return $entityComponentsNewExpr;
 			};
 			

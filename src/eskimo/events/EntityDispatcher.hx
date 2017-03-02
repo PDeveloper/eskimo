@@ -1,6 +1,7 @@
 package eskimo.events;
 import eskimo.ComponentManager;
 import eskimo.Entity;
+import eskimo.core.IEntityBuffer;
 import eskimo.filters.BitFilter;
 import eskimo.containers.EntityArray;
 import eskimo.containers.IContainerListener;
@@ -13,10 +14,12 @@ import eskimo.containers.IContainerListener;
 class EntityDispatcher implements IEntityDispatcher
 {
 	
+	public var source:IEntityBuffer;
 	public var listeners:Array<IEntityListener>;
 	
-	public inline function new():Void
+	public inline function new(source:IEntityBuffer):Void
 	{
+		this.source = source;
 		listeners = new Array<IEntityListener>();
 	}
 	

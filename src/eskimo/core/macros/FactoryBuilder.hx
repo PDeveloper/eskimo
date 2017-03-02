@@ -119,6 +119,7 @@ class FactoryBuilder
 			
 			var entity_components_create_expr:Expr = {expr: ENew(entityComponentsDef, [macro this, macro entity]), pos: Context.currentPos() };
 			
+			var entityArg = { name: 'entity', type: entityType, opt: false };
 			var entityArgOpt = { name: 'entity', type: entityType, opt: true };
 			
 			fields.push(TypeTools.buildFunction(
@@ -127,6 +128,14 @@ class FactoryBuilder
 				[
 					(macro if (entity == null) entity = manager.create()),
 					macro return $entity_components_create_expr
+				]
+			));
+			
+			fields.push(TypeTools.buildFunction(
+				'destroy', [APublic], [entityArg],
+				macro : Void,
+				[
+					macro manager.destroy(entity)
 				]
 			));
 			

@@ -1,4 +1,5 @@
 package eskimo.macros;
+import haxe.crypto.Md5;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
@@ -23,20 +24,30 @@ class TypeTools
 		var types_strings = [];
 		
 		for (i in 0...arity) {
-			var typePack = switch (types[i])
-			{
-				case TInst(ref, types): ref.get().pack;
-				default:
-					throw false;
-			}
 			var typeName = switch (types[i])
 			{
 				case TInst(ref, types): ref.get().name;
 				default:
 					throw false;
 			}
-			typePack.push(typeName);
-			var fullType = typePack.join(delimiter);
+			var typePack = switch (types[i])
+			{
+				case TInst(ref, types): ref.get().pack;
+				default:
+					throw false;
+			}
+			
+			var fullType = typeName;
+			if (!Context.defined('cpp'))
+			{
+				typePack.push(typeName);
+				fullType = typePack.join(delimiter);
+			}
+			else
+			{
+				fullType = Md5.encode(typePack.join('.')).substr(0, 3) + delimiter + typeName;
+			}
+			
 			types_strings.push(fullType);
 		}
 		return types_strings.join(delimiter);

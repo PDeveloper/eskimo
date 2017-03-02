@@ -53,4 +53,9 @@ class System
 		return __active;
 	}
 	
+	public function toString():String
+	{
+		return Type.getClassName(Type.getClass(this));
+	}
+	
 }

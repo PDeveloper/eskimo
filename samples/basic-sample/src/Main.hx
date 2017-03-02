@@ -2,8 +2,8 @@ package;
 import eskimo.ComponentManager;
 import eskimo.Entity;
 import eskimo.EntityManager;
-import eskimo.events.ViewEvents;
 import eskimo.core.Factory;
+import eskimo.events.ViewEvents;
 import eskimo.core.View;
 import haxe.Json;
 

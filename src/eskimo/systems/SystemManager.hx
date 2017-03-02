@@ -1,6 +1,7 @@
 package eskimo.systems;
 import eskimo.EntityManager;
 import eskimo.bits.BitFlag;
+import haxe.Timer;
 
 /**
  * ...
@@ -31,7 +32,9 @@ class SystemManager
 	
 	public function update(dt:Float):Void
 	{
-		for (system in systems) if (system.isActive()) system.onUpdate(dt);
+		for (system in systems) if (system.isActive()) {
+			system.onUpdate(dt);
+		}
 	}
 	
 	public function add(system:System):Void

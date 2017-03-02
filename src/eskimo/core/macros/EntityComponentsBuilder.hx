@@ -70,6 +70,14 @@ class EntityComponentsBuilder
 					macro return entity
 				])
 			);
+				
+			fields.push(TypeTools.buildFunction('destroy',
+				[APublic, AInline], [],
+				macro : Void,
+				[
+					macro factory.manager.destroy(entity)
+				])
+			);
 			
 			for (i in 0...arity) {
 				var info = TypeTools.getPathInfo(types[i]);

@@ -50,15 +50,12 @@ class ViewBuilder
 			var entityManagerType = macro : eskimo.EntityManager;
 			
 			var entityArrayType = macro : eskimo.containers.EntityArray;
-			var entityArrayArrayType = macro : Array<Entity>;
 			var iFilterType = macro : eskimo.filters.IFilter;
 			var entityDispatcherType = macro : eskimo.events.EntityDispatcher;
+			var boolType = macro : Bool;
 			
-			var entityArrayName = 'entities_array';
-			fields.push(TypeTools.buildVar(entityArrayName, [APrivate], entityArrayType));
-			
-			var entityArrayArrayName = 'entities';
-			fields.push(TypeTools.buildVar(entityArrayArrayName, [APublic], entityArrayArrayType));
+			var entityArrayName = 'entities';
+			fields.push(TypeTools.buildVar(entityArrayName, [APublic], entityArrayType));
 			
 			var filterName = 'filter';
 			fields.push(TypeTools.buildVar(filterName, [APublic], iFilterType));
@@ -66,11 +63,15 @@ class ViewBuilder
 			var dispatcherName = 'dispatcher';
 			fields.push(TypeTools.buildVar(dispatcherName, [APublic], entityDispatcherType));
 			
+			var isEnabledName = 'isEnabled';
+			fields.push(TypeTools.buildVar(isEnabledName, [APublic], boolType));
+			
 			constructorExprs.push(macro $b{[
-				macro this.dispatcher = new eskimo.events.EntityDispatcher(),
+				macro this.isEnabled = true,
 				
-				macro this.entities_array = new eskimo.containers.EntityArray(),
-				macro this.entities = entities_array.entities,
+				macro this.dispatcher = new eskimo.events.EntityDispatcher(this),
+				
+				macro this.entities = new eskimo.containers.EntityArray(),
 				macro this.filter = filter != null ? filter : new eskimo.filters.BitFilter([]),
 				
 				macro super(manager)
@@ -113,18 +114,20 @@ class ViewBuilder
 			fields.push(TypeTools.buildFunction('dispose', [APublic], [], macro : Void, destructorExprs));
 			
 			var checkExpr = macro {
+				if (!isEnabled) return;
+				
 				if (filter.contains(entity))
 				{
-					if (!entities_array.has(entity))
+					if (!entities.has(entity))
 					{
-						entities_array.push(entity);
+						entities.push(entity);
 						for (listener in dispatcher.listeners) listener.onAdd(entity);
 					}
 					else for (listener in dispatcher.listeners) listener.onUpdate(entity, type);
 				}
-				else if (entities_array.has(entity))
+				else if (entities.has(entity))
 				{
-					entities_array.remove(entity);
+					entities.remove(entity);
 					for (listener in dispatcher.listeners) listener.onRemove(entity);
 				}
 			};
@@ -132,13 +135,13 @@ class ViewBuilder
 			
 			var iComponentTypeType = macro : eskimo.ComponentManager.IComponentType;
 			
-			fields.push(TypeTools.buildFunction('check', [APrivate],
+			fields.push(TypeTools.buildFunction('check', [APrivate, AInline],
 				[{name: 'entity', type: entityType},
 				{name: 'type', type: iComponentTypeType, opt: true}],
 				macro : Void,
 				[checkExpr]));
 			
-			fields.push(TypeTools.buildFunction('update', [APublic],
+			fields.push(TypeTools.buildFunction('update', [APublic, AInline],
 				[{name: 'entity', type: entityType},
 				{name: 'type', type: iComponentTypeType}],
 				macro : Void,
@@ -169,6 +172,10 @@ class ViewBuilder
 				[{
 					pack: ['eskimo', 'containers'],
 					name: 'IContainerListener'
+				},
+				{
+					pack: ['eskimo', 'core'],
+					name: 'IEntityBuffer'
 				}]),
 				fields: fields
 			});
